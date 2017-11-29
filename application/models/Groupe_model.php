@@ -44,10 +44,14 @@ class Groupe_model extends CI_Model
         // Si variable row = à quelque chose
         if(isset($row)) {
             // Connexion réussie
-            $this->id_utilisateur = $row->id_utilisateur;
-            $this->nom = $row->nom;
-            $this->email = $row->email;
-            $this->est_actif = $row->est_actif;
+            foreach(get_object_vars($row) as $key => $value){
+                if($key != 'mot_de_passe'){
+                    $this->$key = $value;
+                }
+            }
+
+            $this->mot_de_passe = '';
+
             //Objet courant va comprendre tout ça donc $user dans controller Welcome sera = à ça
             return TRUE;
 

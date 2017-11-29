@@ -48,10 +48,29 @@ class Groupes extends REST_Controller
 
     public function login_post(){
         $login = $this->post('login');
-        $pass = $this->post('pass');
+        $pass = $this->post('mot_de_passe');
 
         if(isset($login) && isset($pass)){
+            $group = new Groupe_model();
+            $group->login = $login;
+            $group->mot_de_passe = $pass;
 
+            if($group->connecter()){
+                $results = array(
+                    'status' => true,
+                    'message' => 'Connexion réussie !',
+                    'group' => $group
+                );
+
+                $this->response($results, REST_Controller::HTTP_OK);
+            } else {
+                $results = array(
+                    'status' => false,
+                    'message' => 'Identifiant ou mot de passe incorrect'
+                );
+
+                $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+            }
         } else {
             $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
