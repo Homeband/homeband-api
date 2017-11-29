@@ -37,7 +37,7 @@ class Example extends REST_Controller {
             ['id' => 3, 'name' => 'Jane', 'email' => 'jane@example.com', 'fact' => 'Lives in the USA', ['hobbies' => ['guitar', 'cycling']]],
         ];
 
-        $id = $this->get('names');
+        $id = $this->get('id');
 
         // If the id parameter doesn't exist return all the users
 
