@@ -348,7 +348,9 @@ abstract class CI_DB_forge {
 
 		if (($result = $this->db->query($sql)) !== FALSE)
 		{
-			isset($this->db->data_cache['table_names']) && $this->db->data_cache['table_names'][] = $table;
+			if(isset($this->db->data_cache['table_names'])){
+			    $this->db->data_cache['table_names'][] = $table;
+            }
 
 			// Most databases don't support creating indexes from within the CREATE TABLE statement
 			if ( ! empty($this->keys))
@@ -555,7 +557,6 @@ abstract class CI_DB_forge {
 	/**
 	 * Column Add
 	 *
-	 * @todo	Remove deprecated $_after option in 3.1+
 	 * @param	string	$table	Table name
 	 * @param	array	$field	Column definition
 	 * @param	string	$_after	Column for AFTER clause (deprecated)

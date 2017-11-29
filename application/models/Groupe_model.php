@@ -6,26 +6,26 @@
  * Time: 16:12
  */
 
-class Groupe_model extends CI_Model implements JsonSerializable
+class Groupe_model extends CI_Model
 {
-    private $biographie = '';
-    private $contacts = '';
-    private $email = '';
-    private $est_actif = 1;
-    private $id_groupes = 0;
-    private $id_style = 0;
-    private $id_villes = 0;
-    private $lien_bandcamp = '';
-    private $lien_facebook = '';
-    private $lien_instagram = '';
-    private $lien_itunes = '';
-    private $lien_soundcloud = '';
-    private $lien_spotify = '';
-    private $lien_twitter = '';
-    private $lien_youtube = '';
-    private $login = '';
-    private $mot_de_passe = '';
-    private $nom = '';
+    public $biographie = '';
+    public $contacts = '';
+    public $email = '';
+    public $est_actif = 1;
+    public $id_groupes = 0;
+    public $id_style = 0;
+    public $id_villes = 0;
+    public $lien_bandcamp = '';
+    public $lien_facebook = '';
+    public $lien_instagram = '';
+    public $lien_itunes = '';
+    public $lien_soundcloud = '';
+    public $lien_spotify = '';
+    public $lien_twitter = '';
+    public $lien_youtube = '';
+    public $login = '';
+    public $mot_de_passe = '';
+    public $nom = '';
 
     public function inscrire(){
         $data = get_object_vars($this);
@@ -57,16 +57,4 @@ class Groupe_model extends CI_Model implements JsonSerializable
             return FALSE;
         }
     }
-
-    public function __set($key, $value){
-        if(property_exists($this, $key)){
-            $this->$key = $value;
-        }
-    }
-
-    public function jsonSerialize() {
-        return (object) get_object_vars($this);
-    }
-
-
 }

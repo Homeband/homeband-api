@@ -20,24 +20,40 @@ class Groupes extends REST_Controller
 
     public function index_post(){
         $group_post = $this->post('group');
+
         $group = new Groupe_model();
         foreach($group_post as $key => $value){
             $group->$key = $value;
         }
 
+        // TODO : Vérifier les champs obligatoires
+
         if($group->inscrire()){
             $results = array(
                 'status' => true,
+                'message' => 'Inscription réussie !',
                 'group' => $group
             );
 
-            $this->response($results, REST_Controller::HTTP_OK);
+            $this->response($results, REST_Controller::HTTP_CREATED);
         } else {
             $results = array(
-                'status' => false
+                'status' => false,
+                'message' => 'Erreur lors de l\'inscription'
             );
 
-            $this->response($results, REST_Controller::HTTP_OK);
+            $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+        }
+    }
+
+    public function login_post(){
+        $login = $this->post('login');
+        $pass = $this->post('pass');
+
+        if(isset($login) && isset($pass)){
+
+        } else {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 }

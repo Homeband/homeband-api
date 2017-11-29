@@ -1,11 +1,11 @@
 <?php
 
-class Ville_model extends CI_Model implements JsonSerializable
+class Ville_model extends CI_Model
 {
-    private $code_postal;
-    private $est_actif;
-    private $id_villes;
-    private $nom;
+    public $code_postal;
+    public $est_actif;
+    public $id_villes;
+    public $nom;
 
 
     public function getByCodePostal(){
@@ -32,18 +32,6 @@ class Ville_model extends CI_Model implements JsonSerializable
         $villes = $query->result('Ville_model');
 
         return $villes;
-    }
-
-
-
-    public function __set($key, $value){
-        if(property_exists($this, $key)){
-            $this->$key = $value;
-        }
-    }
-
-    public function jsonSerialize() {
-        return (object) get_object_vars($this);
     }
 
 }
