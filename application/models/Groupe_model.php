@@ -61,4 +61,22 @@ class Groupe_model extends CI_Model
             return FALSE;
         }
     }
+
+    public function lister($cp,$rayon,$styles){
+        // Sélectionne la ville si le champs cp est remplis
+        $this->db->from('groupes');
+        if(isset($cp)){
+            $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
+            $this->db->where('villes.cp' ,$cp);
+        }
+
+        if(isset($styles)){
+            $this->db->join('styles', 'styles.id_styles = groupes.id_styles');
+            $this->db->where('styles.id_styles' ,$styles);
+        }
+        // Récupère tout les champs de la table 'groupes' et renvoie la liste
+        $query = $this->db->get();
+        return $query->result();
+
+    }
 }

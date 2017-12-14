@@ -15,7 +15,25 @@ class Groupes extends REST_Controller
     }
 
     public function index_get(){
-        $this->response("Liste des groupes", REST_Controller::HTTP_OK);
+        // Si on passe dans un tableau associatif :
+        /*  $params = array(
+                    'cp' => $this->input->get('nomduchamp'),
+                    'rayon' => $this->input->get('nomduchamp')
+                    'styles' => $this->input->get('nomduchamp')
+                );
+       */
+        $cp = $this->get('cp');
+        $rayon = $this->get('rayon');
+        $styles = $this->get('styles');
+       $liste = $this->groupe->lister($cp,$rayon,$styles);
+        $results = array(
+            'status' => true,
+            'message' => 'Connexion réussie !',
+            'groups' => $liste
+        );
+
+        $this->response($results, REST_Controller::HTTP_OK);
+
     }
 
     public function detail_get($id_groupe){
@@ -27,6 +45,10 @@ class Groupes extends REST_Controller
     }
 
     public function index_post(){
+        // Récupération du paramètre nommé 'group' depuis le client ( ex : inscription dans le controleur groupes sur homeband , ligne avec $result = $this->rest->post('groupes', array("group" => $group)); )
+        // Traduction de cette ligne : variable $result = rest c'est l'appelle à l'API avec la méthode post , ( 1er paramètres c'est le nom du controlleur à appeller sur API comme par ex : 'groupes/test'
+        // ## Exemple de tableau associatif dans homeband/groupes/connexion
+        // Et le dernier paramètres est un tableau associatif " => " , "group" c'sst le nom du parametre de l'API on pourrait l'appeller test ,
         $group_post = $this->post('group');
 
         $group = new Groupe_model();
