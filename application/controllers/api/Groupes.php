@@ -15,7 +15,15 @@ class Groupes extends REST_Controller
     }
 
     public function index_get(){
-        $this->response("OK", REST_Controller::HTTP_OK);
+        $this->response("Liste des groupes", REST_Controller::HTTP_OK);
+    }
+
+    public function detail_get($id_groupe){
+        $this->response("Fiche $id_groupe", REST_Controller::HTTP_OK);
+    }
+
+    public function detail_put($id_groupe){
+        $this->response("Mise à jour $id_groupe", REST_Controller::HTTP_OK);
     }
 
     public function index_post(){
@@ -74,5 +82,13 @@ class Groupes extends REST_Controller
         } else {
             $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
+    }
+
+    public function membres_get($id_groupe= '', $id_membre = ''){
+        $this->response(array($id_groupe, $id_membre), REST_Controller::HTTP_OK);
+    }
+
+    private function membres_get_detail($idGroupe, $idMembre){
+        $this->response(array($idGroupe, $idMembre), REST_Controller::HTTP_OK);
     }
 }
