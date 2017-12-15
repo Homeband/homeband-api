@@ -54,9 +54,25 @@ class Groupes extends REST_Controller
         );
         $this->response($results, REST_Controller::HTTP_OK);
     }
-
     public function detail_put($id_groupe){
-        $this->response("Mise à jour $id_groupe", REST_Controller::HTTP_OK);
+        $group_put = $this->post('group');
+        $groupe = $this->groupe->mofifier($id_groupe,$group_put);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'group' => $groupe
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
+
+    public function detail_delete($id_groupe){
+        $groupe = $this->groupe->supprimer($id_groupe);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'group' => $groupe
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
     public function index_post(){
