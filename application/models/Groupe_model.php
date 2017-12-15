@@ -64,10 +64,15 @@ class Groupe_model extends CI_Model
 
     public function lister($cp,$rayon,$styles){
         // Sélectionne la ville si le champs cp est remplis
+        $this->db->select('groupes.*');
         $this->db->from('groupes');
         if(isset($cp)){
             $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
-            $this->db->where('villes.cp' ,$cp);
+            $this->db->where('villes.code_postal' ,$cp);
+
+            if(isset($rayon)){
+
+            }
         }
 
         if(isset($styles)){
@@ -78,5 +83,13 @@ class Groupe_model extends CI_Model
         $query = $this->db->get();
         return $query->result();
 
+    }
+    public function recuperer($id_groupe){
+        $this->db->select('groupes.*');
+        $this->db->from('groupes');
+        $this->db->where('id_groupes' ,$id_groupe);
+        $query = $this->db->get();
+        $row = $query->row(0, 'Groupe_model');
+        return $row;
     }
 }

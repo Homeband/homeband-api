@@ -25,6 +25,15 @@ class Groupes extends REST_Controller
         $cp = $this->get('cp');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
+
+        if (isset($rayon) && !isset($cp)){
+            $results = array(
+                'status' => false,
+                'message' => 'Le code postal est requis pour filtrer sur le rayon !',
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+
+        }
        $liste = $this->groupe->lister($cp,$rayon,$styles);
         $results = array(
             'status' => true,
@@ -37,7 +46,13 @@ class Groupes extends REST_Controller
     }
 
     public function detail_get($id_groupe){
-        $this->response("Fiche $id_groupe", REST_Controller::HTTP_OK);
+        $groupe = $this->groupe->recuperer($id_groupe);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'group' => $groupe
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
     public function detail_put($id_groupe){
