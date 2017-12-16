@@ -92,22 +92,12 @@ class Groupe_model extends CI_Model
         $row = $query->row(0, 'Groupe_model');
         return $row;
     }
-    public function modifier($id_groupe,$group_put){
-        $this->db->select('groupes.*');
-        $this->db->from('groupes');
-        $this->db->where('id_groupes' ,$id_groupe);
-        $this->db->replace('groupes', $group_put);
-        $query = $this->db->get();
-        $row = $query->row(0, 'Groupe_model');
-        return $row;
+    public function modifier($group_put){
+        $this->db->where('id_groupes' ,$group_put->id_groupes);
+        return $this->db->update('groupes', $group_put);
     }
     public function supprimer($id_groupe){
-        $this->db->select('groupes.*');
-        $this->db->from('groupes');
         $this->db->where('id_groupes' ,$id_groupe);
-        $this->db->delete('groupes');
-        $query = $this->db->get();
-        $row = $query->row(0, 'Groupe_model');
-        return $row;
+        return $this->db->delete('groupes');
     }
 }
