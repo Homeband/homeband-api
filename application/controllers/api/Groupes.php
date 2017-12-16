@@ -55,22 +55,40 @@ class Groupes extends REST_Controller
         $this->response($results, REST_Controller::HTTP_OK);
     }
     public function detail_put($id_groupe){
-        $group_put = $this->post('group');
-        $groupe = $this->groupe->mofifier($id_groupe,$group_put);
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-            'group' => $groupe
-        );
-        $this->response($results, REST_Controller::HTTP_OK);
+        $group_put = $this->put('group');
+        if (isset($group_put["mot_de_passe"]) && empty($group_put["mot_de_passe"])){
+            unset($group_put["mot_de_passe"]);
+        }
+        else{}
+
+       $group_put = arrayToObject($group_put);
+        $group_put->id_groupes=$id_groupe;
+        if ($this->groupe->modifier($group_put)){
+            $groupe = $this->groupe->recuperer($id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'group' => $groupe
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'group' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
+
+
     }
 
     public function detail_delete($id_groupe){
-        $groupe = $this->groupe->supprimer($id_groupe);
+        $this->groupe->supprimer($id_groupe);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
-            'group' => $groupe
         );
         $this->response($results, REST_Controller::HTTP_OK);
     }
