@@ -64,14 +64,29 @@ $route['translate_uri_dashes'] = TRUE;
 // Villes
 $route['api/villes'] = 'api/villes';
 
+
 // Connexion
 $route['api/sessions']['POST'] = 'api/groupes/login';
+
 
 // Groupes
 $route['api/groupes'] = 'api/groupes';
 $route['api/groupes/(:num)'] = 'api/groupes/detail/$1';
+
 $route['api/groupes/(:num)/membres'] = 'api/groupes/membres/$1';
 $route['api/groupes/(:num)/membres/(:num)'] = 'api/groupes/detail_membre/$1/$2';
+
+$route['api/groupes/(:num)/evenements'] = 'api/groupes/evenements/$1';
+$route['api/groupes/(:num)/evenements/(:num)'] = 'api/groupes/evenement_detail/$1/$2';
+
+$route['api/groupes/(:num)/albums'] = 'api/groupes/albums/$1';
+$route['api/groupes/(:num)/albums/(:num)'] = 'api/groupes/album_detail/$1/$2';
+
+$route['api/groupes/(:num)/avis'] = 'api/groupes/avis/$1';
+$route['api/groupes/(:num)/avis/(:num)'] = 'api/groupes/avis_detail/$1/$2';
+
+$route['api/groupes/(:num)/annonces'] = 'api/groupes/annonces/$1';
+$route['api/groupes/(:num)/annonces/(:num)'] = 'api/groupes/annonce_detail/$1/$2';
 
 
 // Tout refuser par défaut
