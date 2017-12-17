@@ -70,7 +70,8 @@ $route['api/sessions']['POST'] = 'api/groupes/login';
 // Groupes
 $route['api/groupes'] = 'api/groupes';
 $route['api/groupes/(:num)'] = 'api/groupes/detail/$1';
-$route['api/groupes/(:num)/membres/(:num)'] = 'api/groupes/membres/$1/$2';
+$route['api/groupes/(:num)/membres'] = 'api/groupes/membres/$1';
+$route['api/groupes/(:num)/membres/(:num)'] = 'api/groupes/detail_membre/$1/$2';
 
 
 // Tout refuser par défaut

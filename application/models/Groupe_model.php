@@ -100,25 +100,7 @@ class Groupe_model extends CI_Model
         $this->db->where('id_groupes' ,$id_groupe);
         return $this->db->delete('groupes');
     }
-    public function recuperer_membres($id_groupe){
-        $this->db->select('membres_groupes.*');
-        $this->db->from('membres_groupes');
-        $this->db->where('id_groupes' ,$id_groupe);
-        if(isset($date_debut)){
-            $this->db->where('date_debut' ,$date_debut);
-            $query = $this->db->get();
-            return $query->row(0, 'Groupe_model');
-        }
-        if(isset($date_fin)){
-            $this->db->where('date_fin' ,$date_fin);
-            $query = $this->db->get();
-            return $query->row(0, 'Groupe_model');
-        }
 
-        $query = $this->db->get();
-        $row = $query->row(0, 'Groupe_model');
-        return $row;
-    }
 
     public function recupererDetails_membres($id_groupe,$id_membres){
         $this->db->select('membres_groupes.*');

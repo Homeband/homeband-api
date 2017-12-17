@@ -12,6 +12,7 @@ class Groupes extends REST_Controller
     {
         parent::__construct($config);
         $this->load->model('groupe_model', 'groupe');
+        $this->load->model('membres_model', 'membres');
     }
 
     public function index_get(){
@@ -155,8 +156,11 @@ class Groupes extends REST_Controller
         }
     }
 
-    public function membres_get($date_debut, $date_fin,$qte,$id_groupe){
-        $members = $this->membres_groupes->recuperer_membres($date_debut, $date_fin,$qte,$id_groupe);
+    public function membres_get($id_groupe){
+        $date_debut = $this->get('date_debut');
+        $date_fin = $this->get('date_fin');
+        $qte = $this->get('qte');
+        $members = $this->membres->lister($date_debut, $date_fin,$qte,$id_groupe);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
@@ -167,7 +171,31 @@ class Groupes extends REST_Controller
 
     public function membres_post($id_groupe){
         $member = $this->post('member');
-        //TODO pas d'idée pour le model
+        $member = arrayToObject($member);
+        $member->id_groupes=$id_groupe;
+        $id= $this->membres->ajouter($member);
+        if($id>0){
+            $member = $this->membres->recuperer($id);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'member' => $member
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la création du membre !',
+                'member' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
+
+
+    }
+
+    public function detail_membre_get($id_groupe,$id_membres){
+        $member = $this->membres->recuperer($id_membres,$id_groupe);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
@@ -176,21 +204,12 @@ class Groupes extends REST_Controller
         $this->response($results, REST_Controller::HTTP_OK);
     }
 
-    public function detailMembre_get($id_groupe,$id_membres){
-        $member = $this->membres_groupes->recupererDetails_membre($id_groupe,$id_membres);
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-            'member' => $member
-        );
-        $this->response($results, REST_Controller::HTTP_OK);
-    }
-    public function detailMembre_put($id_groupe,$id_membres,$member)
+    public function detail_membre_put($id_groupe,$id_membres)
     {
         $membres_put = $this->put('member');
         $membres_put = arrayToObject($membres_put);
-        if ($this->membres_groupes->modifierDetails($membres_put)){
-            $member = $this->membres_groupes->recupererDetails_membre($id_groupe,$id_membres);
+        if ($this->membres->modifier($membres_put)){
+            $member = $this->membres->recuperer($id_membres,$id_groupe);
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
@@ -208,8 +227,8 @@ class Groupes extends REST_Controller
         }
     }
 
-    public function detailMembre_delete($id_groupe,$id_membres){
-        $this->groupe->supprimerDetails($id_groupe,$id_membres);
+    public function detail_membre_delete($id_groupe,$id_membres){
+        $this->membres->supprimer($id_membres);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
@@ -218,7 +237,8 @@ class Groupes extends REST_Controller
     }
 
     public function evenements_get($date_debut, $date_fin,$qte,$id_groupe){
-        //TODO Database pas de date debut et fin
+        //TODO date_heure >= date_debut
+        //                <= date_fin
     }
 
     public function evenements_post($date_debut, $date_fin,$qte,$id_groupe){
