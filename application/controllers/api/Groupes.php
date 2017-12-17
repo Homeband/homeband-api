@@ -155,11 +155,148 @@ class Groupes extends REST_Controller
         }
     }
 
-    public function membres_get($id_groupe= '', $id_membre = ''){
-        $this->response(array($id_groupe, $id_membre), REST_Controller::HTTP_OK);
+    public function membres_get($date_debut, $date_fin,$qte,$id_groupe){
+        $members = $this->membres_groupes->recuperer_membres($date_debut, $date_fin,$qte,$id_groupe);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'members' => $members
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
-    private function membres_get_detail($idGroupe, $idMembre){
-        $this->response(array($idGroupe, $idMembre), REST_Controller::HTTP_OK);
+    public function membres_post($id_groupe){
+        $member = $this->post('member');
+        //TODO pas d'idée pour le model
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'member' => $member
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
+
+    public function detailMembre_get($id_groupe,$id_membres){
+        $member = $this->membres_groupes->recupererDetails_membre($id_groupe,$id_membres);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'member' => $member
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
+    public function detailMembre_put($id_groupe,$id_membres,$member)
+    {
+        $membres_put = $this->put('member');
+        $membres_put = arrayToObject($membres_put);
+        if ($this->membres_groupes->modifierDetails($membres_put)){
+            $member = $this->membres_groupes->recupererDetails_membre($id_groupe,$id_membres);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'member' => $member
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'member' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function detailMembre_delete($id_groupe,$id_membres){
+        $this->groupe->supprimerDetails($id_groupe,$id_membres);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
+
+    public function evenements_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function evenements_post($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+
+    public function evenementsDetails_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function evenementsDetails_put($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function evenementsDetails_delete($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function albums_get($date_debut, $date_fin,$qte,$id_groupe){
+    //TODO Database pas de date debut et fin
+}
+
+    public function albums_post($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function albumsDetails_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function albumsDetails_put($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function albumsDetails_delete($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function avis_get($date_debut, $date_fin,$qte,$id_groupe){
+    //TODO Database pas de date debut et fin
+}
+
+    public function avis_post($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function avisDetails_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function avisDetails_put($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function avisDetails_delete($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function annonces_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function annonces_post($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function annoncesDetails_get($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function annoncesDetails_put($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+    public function annoncesDetails_delete($date_debut, $date_fin,$qte,$id_groupe){
+        //TODO Database pas de date debut et fin
+    }
+
+
 }
