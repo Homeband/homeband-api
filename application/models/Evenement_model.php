@@ -1,15 +1,16 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: nicolasgerard
- * Date: 17/12/17
- * Time: 22:04
+ * User: christopher
+ * Date: 18/12/2017
+ * Time: 16:03
  */
 
-class Avis_model extends CI_Model
+class Evenement_model extends CI_Model
 {
+
     public function lister($id_groupes, $date_debut, $date_fin, $qte){
-        $this->db->from('avis');
+        $this->db->from('groupes_evenements');
         $this->db->where('id_groupes', $id_groupes);
         $this->db->where('est_actif', true);
 
@@ -27,26 +28,26 @@ class Avis_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->result('Avis');
+        return $query->result('Evenement');
     }
 
-    public function ajouter($comment, $id_groupes = 0){
+    public function ajouter($event, $id_groupes = 0){
 
         if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
-            $comment->id_groupes = $id_groupes;
+            $event->id_groupes = $id_groupes;
         }
 
 
-        if($this->db->insert('avis', $comment)){
+        if($this->db->insert('groupes_evenements', $event)){
             return $this->db->insert_id();
         } else {
             return 0;
         }
     }
 
-    public function recuperer($id_avis, $id_groupes = 0){
-        $this->db->from('avis');
-        $this->db->where('id_avis', $id_avis);
+    public function recuperer($id_event, $id_groupes = 0){
+        $this->db->from('groupes_evenements');
+        $this->db->where('id_evenements', $id_event);
         $this->db->where('est_actif', true);
 
         if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
@@ -55,26 +56,26 @@ class Avis_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->row(0, 'Avis');
+        return $query->row(0, 'Evenement');
     }
 
-    public function modifier($comment, $id_avis, $id_groupes = 0){
-        $this->db->where('id_avis', $id_avis);
+    public function modifier($event, $id_evenements, $id_groupes = 0){
+        $this->db->where('id_evenements', $id_evenements);
 
         if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
             $this->db->where('id_groupes', $id_groupes);
         }
 
-        return $this->db->update('avis', $comment);
+        return $this->db->update('groupes_evenements', $event);
     }
 
-    public function supprimer($id_avis){
+    public function supprimer($id_evenements){
         // Préparation de la requête
-        $this->db->from('avis');
+        $this->db->from('groupes_evenements');
 
         // Modification du statut est_actif à false
         $this->db->set('est_actif', false);
-        $this->db->where('id_avis', $id_avis);
+        $this->db->where('id_evenements', $id_evenements);
 
         return $this->db->update();
     }

@@ -13,7 +13,7 @@ class Groupes extends REST_Controller
         parent::__construct($config);
         $this->load->model('groupe_model', 'groupes');
         $this->load->model('membre_model', 'membres');
-        //$this->load->model('evenement_model', 'evenements');
+        $this->load->model('evenement_model', 'evenements');
         $this->load->model('album_model', 'albums');
         $this->load->model('avis_model', 'avis');
         $this->load->model('annonce_model', 'annonces');
@@ -264,25 +264,94 @@ class Groupes extends REST_Controller
 
 
     // Evenements
-    public function evenements_get($id_groupes){
-        //TODO date_heure >= date_debut
-        //                <= date_fin
+    public function evenements_get($id_groupe){
+        $date_debut = $this->get('date_debut');
+        $date_fin = $this->get('date_fin');
+        $qte = $this->get('qte');
+        $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'events' => $events
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
-    public function evenements_post($id_groupes){
-        //TODO Database pas de date debut et fin
+    public function evenements_post($id_groupe){
+        $event = new Groupe_Evenement($this->post('event'));
+        $event->id_groupes = $id_groupe;
+
+        $id = $this->evenements->ajouter($event);
+
+        if($id > 0){
+            $event = $this->evenements->recuperer($id);
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'event' => $event
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la création de l\'evenement.',
+                'event' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
-    public function evenement_detail_get($id_groupe, $id_evenement){
-        //TODO Database pas de date debut et fin
+    public function evenement_detail_get($id_groupe, $id_evenements){
+        $event = $this->evenements->recuperer($id_evenements, $id_groupe);
+
+        if (isset($event)) {
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'event' => $event
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else {
+            $results = array(
+                'status' => true,
+                'message' => 'Aucun album correspondant à l\'ID '.$id_evenements.' pour ce groupe.',
+                'event' => null
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
     }
 
-    public function evenement_detail_put($id_groupe, $id_evenement){
-        //TODO Database pas de date debut et fin
+    public function evenement_detail_put($id_groupe, $id_evenements){
+        $event = $this->put('event');
+        $event = arrayToObject($event);
+        if ($this->evenements->modifier($event)){
+            $event = $this->evenements->recuperer($id_evenements,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'event' => $event
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'event' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
-    public function evenement_detail_delete($id_groupe, $id_evenement){
-        //TODO Database pas de date debut et fin
+    public function evenement_detail_delete($id_groupe, $id_evenements){
+        $this->evenements->supprimer($id_evenements);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
 
@@ -353,11 +422,34 @@ class Groupes extends REST_Controller
     }
 
     public function album_detail_put($id_groupe, $id_albums){
-
+        $album = $this->put('album');
+        $album = arrayToObject($album);
+        if ($this->albums->modifier($album)){
+            $album = $this->albums->recuperer($id_albums,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'album' => $album
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'album' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     public function album_detail_delete($id_groupe, $id_albums){
-
+        $this->albums->supprimer($id_albums);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
 
@@ -365,23 +457,95 @@ class Groupes extends REST_Controller
 
     // Avis
     public function avis_get($id_groupe){
-    //TODO Database pas de date debut et fin
-}
+        $date_debut = $this->get('date_debut');
+        $date_fin = $this->get('date_fin');
+        $qte = $this->get('qte');
+
+        $comments = $this->avis->lister($id_groupe, $date_debut, $date_fin, $qte);
+
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'comments' => $comments
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
 
     public function avis_post($id_groupe){
-        //TODO Database pas de date debut et fin
+        $comment = new Avis($this->post('comment'));
+        $comment->id_groupes = $id_groupe;
+
+        $id = $this->avis->ajouter($comment);
+
+        if($id > 0){
+            $comment = $this->avis->recuperer($id);
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'comment' => $comment
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la création de l\'album.',
+                'comment' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     public function avis_detail_get($id_groupe, $id_avis){
-        //TODO Database pas de date debut et fin
+        $comment = $this->avis->recuperer($id_avis, $id_groupe);
+
+        if (isset($comment)) {
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'comment' => $comment
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else {
+            $results = array(
+                'status' => true,
+                'message' => 'Aucun avis correspondant à l\'ID '.$id_avis.' pour ce groupe.',
+                'comment' => null
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
     }
 
     public function avis_detail_put($id_groupe, $id_avis){
-        //TODO Database pas de date debut et fin
+        $comment = $this->put('event');
+        $comment = arrayToObject($comment);
+        if ($this->avis->modifier($comment)){
+            $comment = $this->avis->recuperer($id_avis,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'comment' => $comment
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'comment' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     public function avis_detail_delete($id_groupe, $id_avis){
-        //TODO Database pas de date debut et fin
+        $this->avis->supprimer($id_avis);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
 
@@ -389,23 +553,95 @@ class Groupes extends REST_Controller
 
     // Annonces
     public function annonces_get($id_groupe){
-        //TODO Database pas de date debut et fin
+        $date_debut = $this->get('date_debut');
+        $date_fin = $this->get('date_fin');
+        $qte = $this->get('qte');
+
+        $annonces = $this->annonces->lister($id_groupe, $date_debut, $date_fin, $qte);
+
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'albums' => $annonces
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
     public function annonces_post($id_groupe){
-        //TODO Database pas de date debut et fin
+        $annonce = new Annonces($this->post('annonce'));
+        $annonce->id_groupes = $id_groupe;
+
+        $id = $this->annonces->ajouter($annonce);
+
+        if($id > 0){
+            $annonce = $this->anonces->recuperer($id);
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'annonce' => $annonce
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la création de l\'annonce.',
+                'annonce' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     public function annonce_detail_get($id_groupe, $id_annonces){
-        //TODO Database pas de date debut et fin
+        $annonce = $this->annonces->recuperer($id_annonces, $id_groupe);
+
+        if (isset($annonce)) {
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+                'annonce' => $annonce
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else {
+            $results = array(
+                'status' => true,
+                'message' => 'Aucun avis correspondant à l\'ID '.$id_annonces.' pour ce groupe.',
+                'annonce' => null
+            );
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
     }
 
     public function annonce_detail_put($id_groupe, $id_annonces){
-        //TODO Database pas de date debut et fin
+        $annonce = $this->put('annonce');
+        $annonce = arrayToObject($annonce);
+        if ($this->annonces->modifier($annonce)){
+            $annonce = $this->annonces->recuperer($id_annonces,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'annonce' => $annonce
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        }
+        else{
+            $results = array(
+                'status' => false,
+                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                'annonce' => null
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     public function annonce_detail_delete($id_groupe, $id_annonces){
-        //TODO Database pas de date debut et fin
+        $this->annonces->supprimer($id_annonces);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
 
