@@ -562,7 +562,7 @@ class Groupes extends REST_Controller
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
-            'albums' => $annonces
+            'annonces' => $annonces
         );
         $this->response($results, REST_Controller::HTTP_OK);
     }
