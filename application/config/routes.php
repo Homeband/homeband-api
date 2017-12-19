@@ -63,7 +63,7 @@ $route['translate_uri_dashes'] = TRUE;
 
 // Villes
 $route['api/villes'] = 'api/villes';
-
+$route['api/villes/geocoding'] = 'api/villes/geo';
 
 // Connexion
 $route['api/sessions']['POST'] = 'api/groupes/login';
