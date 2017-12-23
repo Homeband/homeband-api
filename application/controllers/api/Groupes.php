@@ -232,7 +232,7 @@ class Groupes extends REST_Controller
     {
         $membres_put = $this->put('member');
         $membres_put = arrayToObject($membres_put);
-        if ($this->albums->modifier($membres_put)){
+        if ($this->membres->modifier($membres_put)){
             $member = $this->membres->recuperer($id_membres,$id_groupe);
             $results = array(
                 'status' => true,
@@ -424,7 +424,7 @@ class Groupes extends REST_Controller
     public function album_detail_put($id_groupe, $id_albums){
         $album = $this->put('album');
         $album = arrayToObject($album);
-        if ($this->albums->modifier($album, $id_albums, $id_groupe)){
+        if ($this->albums->modifier($album)){
             $album = $this->albums->recuperer($id_albums,$id_groupe);
             $results = array(
                 'status' => true,
