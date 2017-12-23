@@ -55,7 +55,7 @@ class Annonce_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->row(0, 'Annonces');
+        return $query->row(0, 'Annonce');
     }
 
     public function modifier($annonce, $id_annonces, $id_groupes = 0){

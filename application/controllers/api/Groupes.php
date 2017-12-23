@@ -382,11 +382,12 @@ class Groupes extends REST_Controller
         $this->response($results, REST_Controller::HTTP_OK);
     }
 
+
     public function albums_post($id_groupe){
 
         $album = new Album($this->post('album'));
         $album->id_groupes = $id_groupe;
-
+        $album->id_albums = 0;
         $id = $this->albums->ajouter($album);
 
         if($id > 0){
@@ -527,9 +528,9 @@ class Groupes extends REST_Controller
     }
 
     public function avis_detail_put($id_groupe, $id_avis){
-        $comment = $this->put('event');
+        $comment = $this->put('comment');
         $comment = arrayToObject($comment);
-        if ($this->avis->modifier($comment)){
+        if ($this->avis->modifier($comment, $id_avis, $id_groupe)){
             $comment = $this->avis->recuperer($id_avis,$id_groupe);
             $results = array(
                 'status' => true,
@@ -577,13 +578,13 @@ class Groupes extends REST_Controller
     }
 
     public function annonces_post($id_groupe){
-        $annonce = new Annonces($this->post('annonce'));
+        $annonce = new Annonce($this->post('annonce'));
         $annonce->id_groupes = $id_groupe;
 
-        $id = $this->annonces->ajouter($annonce);
+        $id = $this->annonces->ajouter($annonce,$id_groupe);
 
         if($id > 0){
-            $annonce = $this->anonces->recuperer($id);
+            $annonce = $this->annonces->recuperer($id);
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
@@ -625,7 +626,7 @@ class Groupes extends REST_Controller
     public function annonce_detail_put($id_groupe, $id_annonces){
         $annonce = $this->put('annonce');
         $annonce = arrayToObject($annonce);
-        if ($this->annonces->modifier($annonce)){
+        if ($this->annonces->modifier($annonce,$id_annonces, $id_groupe)){
             $annonce = $this->annonces->recuperer($id_annonces,$id_groupe);
             $results = array(
                 'status' => true,
