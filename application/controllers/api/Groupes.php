@@ -278,7 +278,7 @@ class Groupes extends REST_Controller
     }
 
     public function evenements_post($id_groupe){
-        $event = new Groupe_Evenement($this->post('event'));
+        $event = new Evenement($this->post('event'));
         $event->id_groupes = $id_groupe;
 
         $id = $this->evenements->ajouter($event);
@@ -302,13 +302,20 @@ class Groupes extends REST_Controller
     }
 
     public function evenement_detail_get($id_groupe, $id_evenements){
+        $detail = $this->get('detail');
         $event = $this->evenements->recuperer($id_evenements, $id_groupe);
-
+        $evenement_detail = array();
         if (isset($event)) {
+
+            if (isset($detail) && ($detail==1)){
+                $evenement_detail=$this->evenements->recuperer_detail($id_evenements);
+            }
+
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
-                'event' => $event
+                'event' => $event,
+                'detail' => $evenement_detail
             );
 
             $this->response($results, REST_Controller::HTTP_OK);
@@ -323,6 +330,7 @@ class Groupes extends REST_Controller
         }
     }
 
+    //TODO
     public function evenement_detail_put($id_groupe, $id_evenements){
         $event = $this->put('event');
         $event = arrayToObject($event);
@@ -347,6 +355,7 @@ class Groupes extends REST_Controller
 
     public function evenement_detail_delete($id_groupe, $id_evenements){
         $this->evenements->supprimer($id_evenements);
+        $this->evenements->supprimer_detail($id_evenements);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',

@@ -10,16 +10,16 @@ class Evenement_model extends CI_Model
 {
 
     public function lister($id_groupes, $date_debut, $date_fin, $qte){
-        $this->db->from('groupes_evenements');
+        $this->db->from('evenements');
         $this->db->where('id_groupes', $id_groupes);
         $this->db->where('est_actif', true);
 
         if(isset($date_debut)){
-            $this->db->where('date_heure >=', $date_debut);
+            //$this->db->where('date_heure >=', $date_debut);
         }
 
         if(isset($date_fin)){
-            $this->db->where('date_heure <=', $date_fin);
+           // $this->db->where('date_heure <=', $date_fin);
         }
 
         if(isset($qte)){
@@ -38,7 +38,7 @@ class Evenement_model extends CI_Model
         }
 
 
-        if($this->db->insert('groupes_evenements', $event)){
+        if($this->db->insert('evenements', $event)){
             return $this->db->insert_id();
         } else {
             return 0;
@@ -46,7 +46,7 @@ class Evenement_model extends CI_Model
     }
 
     public function recuperer($id_event, $id_groupes = 0){
-        $this->db->from('groupes_evenements');
+        $this->db->from('evenements');
         $this->db->where('id_evenements', $id_event);
         $this->db->where('est_actif', true);
 
@@ -59,6 +59,16 @@ class Evenement_model extends CI_Model
         return $query->row(0, 'Evenement');
     }
 
+    public function recuperer_detail($id_event){
+        $this->db->from('details_evenements');
+        $this->db->where('id_evenements', $id_event);
+        $this->db->where('est_actif', true);
+
+        $query = $this->db->get();
+
+        return $query->result('Detail_Evenement');
+    }
+
     public function modifier($event, $id_evenements, $id_groupes = 0){
         $this->db->where('id_evenements', $id_evenements);
 
@@ -66,12 +76,23 @@ class Evenement_model extends CI_Model
             $this->db->where('id_groupes', $id_groupes);
         }
 
-        return $this->db->update('groupes_evenements', $event);
+        return $this->db->update('evenements', $event);
     }
 
     public function supprimer($id_evenements){
+    // Préparation de la requête
+    $this->db->from('evenements');
+
+    // Modification du statut est_actif à false
+    $this->db->set('est_actif', false);
+    $this->db->where('id_evenements', $id_evenements);
+
+    return $this->db->update();
+}
+
+    public function supprimer_detail($id_evenements){
         // Préparation de la requête
-        $this->db->from('groupes_evenements');
+        $this->db->from('details_evenements');
 
         // Modification du statut est_actif à false
         $this->db->set('est_actif', false);

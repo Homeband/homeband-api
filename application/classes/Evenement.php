@@ -6,4 +6,5 @@ class Evenement extends MY_Object
     public $nom = '';
     public $description = '';
     public $est_actif = true;
+    public $id_groupes = 0;
 }
