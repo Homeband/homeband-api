@@ -47,7 +47,7 @@ class Album_model extends CI_Model
 
     public function recuperer($id_albums, $id_groupes = 0){
         $this->db->from('albums');
-        $this->db->where('id_album', $id_albums);
+        $this->db->where('id_albums', $id_albums);
         $this->db->where('est_actif', true);
 
         if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
@@ -60,7 +60,7 @@ class Album_model extends CI_Model
     }
 
     public function modifier($album, $id_albums, $id_groupes = 0){
-        $this->db->where('id_album', $id_albums);
+        $this->db->where('id_albums', $id_albums);
 
         if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
             $this->db->where('id_groupes', $id_groupes);
@@ -75,7 +75,7 @@ class Album_model extends CI_Model
 
         // Modification du statut est_actif à false
         $this->db->set('est_actif', false);
-        $this->db->where('id_album', $id_albums);
+        $this->db->where('id_albums', $id_albums);
 
         return $this->db->update();
     }
