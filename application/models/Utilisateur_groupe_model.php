@@ -1,8 +1,13 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: christopher
+ * Date: 25/12/2017
+ * Time: 20:12
+ */
 
-class Utilisateur_model extends CI_Model
+class Utilisateur_groupe_model extends CI_Model
 {
-    //Classe private car pas besoin d'être accessible ailleurs + get et set creer dans cette classe
     private static $db;
 
     private $id_utilisateur=0;
@@ -22,7 +27,7 @@ class Utilisateur_model extends CI_Model
         self::$db = &get_instance()->db;
     }
 
-    public function lister($cp, $rayon){
+    public function lister($cp, $rayon,$qte){
         $this->db->from('');
         $this->db->where();
         $this->db->where('est_actif', true);
@@ -41,9 +46,9 @@ class Utilisateur_model extends CI_Model
 
         return $query->result('');
     }
-    public function ajouter($user){
+    public function ajouter($groups){
 
-        if($this->db->insert('utilisateur', $user)){
+        if($this->db->insert('utilisateur', $groups)){
             return $this->db->insert_id();
         } else {
             return 0;
@@ -76,6 +81,5 @@ class Utilisateur_model extends CI_Model
 
         return $this->db->update();
     }
-
 
 }
