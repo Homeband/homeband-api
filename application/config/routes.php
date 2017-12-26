@@ -88,6 +88,8 @@ $route['api/groupes/(:num)/avis/(:num)'] = 'api/groupes/avis_detail/$1/$2';
 $route['api/groupes/(:num)/annonces'] = 'api/groupes/annonces/$1';
 $route['api/groupes/(:num)/annonces/(:num)'] = 'api/groupes/annonce_detail/$1/$2';
 
+// Styles
+$route['api/styles'] = 'api/styles';
 
 // Tout refuser par défaut
 $route['(.*)'] = "api/apierror";
