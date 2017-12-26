@@ -131,16 +131,12 @@ class Groupes extends REST_Controller
      * @param $id_groupe
      */
     public function detail_put($id_groupe){
-        $group_put = $this->put('group');
-        if (isset($group_put["mot_de_passe"]) && empty($group_put["mot_de_passe"])){
-            unset($group_put["mot_de_passe"]);
-        } else {
-
+        $groupe = new Groupe($this->put('group'));
+        if(!empty($groupe->mot_de_passe)){
+            $groupe->hash_password();
         }
 
-        $group_put = arrayToObject($group_put);
-        $group_put->id_groupes=$id_groupe;
-        if ($this->groupes->modifier($group_put)){
+        if ($this->groupes->modifier($groupe)){
             $groupe = $this->groupes->recuperer($id_groupe);
             $results = array(
                 'status' => true,
@@ -157,8 +153,6 @@ class Groupes extends REST_Controller
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
-
-
     }
 
     /**

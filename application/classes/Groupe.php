@@ -18,7 +18,7 @@ class Groupe extends MY_Object
     public $lien_twitter = '';
     public $lien_youtube = '';
     public $est_actif = true;
-    public $id_style = 0;
+    public $id_styles = 0;
     public $id_villes = 0;
 
     public function hash_password(){
