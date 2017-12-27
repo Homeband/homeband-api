@@ -8,10 +8,22 @@
 
 class Groupe_model extends CI_Model
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('string');
+    }
+
     private $table = 'GROUPES';
 
     public function inscrire($groupe){
         return $this->db->insert('groupes', $groupe);
+    }
+
+    private function _update_ck($id_groupes, $ck){
+        $this->db->where('id_groupes', $id_groupes);
+        $this->db->set('api_ck', $ck);
+        $this->db->update('groupes');
     }
 
     public function connecter($groupe){
@@ -28,6 +40,12 @@ class Groupe_model extends CI_Model
         if(isset($row) && $row->check_password($groupe->mot_de_passe)) {
             // Connexion réussie
 
+            // Génération du CK pour la session
+            $ck = random_string('alnum', 48);
+
+            $this->_update_ck($row->id_groupes, $ck);
+
+            $row->api_ck = $ck;
             $row->mot_de_passe = '';
 
             //Objet courant va comprendre tout ça donc $user dans controller Welcome sera = à ça

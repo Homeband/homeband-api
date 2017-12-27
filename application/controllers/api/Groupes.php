@@ -654,36 +654,40 @@ class Groupes extends REST_Controller
     // Login
     public function login_post(){
 
-        $login = $this->post('login');
-        $pass = $this->post('mot_de_passe');
+        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, false)) {
+            $login = $this->post('login');
+            $pass = $this->post('mot_de_passe');
 
-        if(isset($login) && isset($pass)){
-            $groupe = new Groupe();
-            $groupe->login = $login;
-            $groupe->mot_de_passe = $pass;
+            if (isset($login) && isset($pass)) {
+                $groupe = new Groupe();
+                $groupe->login = $login;
+                $groupe->mot_de_passe = $pass;
 
-            $connect = $this->groupes->connecter($groupe);
+                $connect = $this->groupes->connecter($groupe);
 
-            if(isset($connect)){
+                if (isset($connect)) {
 
-                $results = array(
-                    'status' => true,
-                    'message' => 'Connexion réussie !',
-                    'group' => $connect
-                );
+                    $results = array(
+                        'status' => true,
+                        'message' => 'Connexion réussie !',
+                        'group' => $connect
+                    );
 
-                $this->response($results, REST_Controller::HTTP_OK);
+                    $this->response($results, REST_Controller::HTTP_OK);
+                } else {
+                    $results = array(
+                        'status' => false,
+                        'message' => 'Identifiant ou mot de passe incorrect',
+                        'group' => null
+                    );
+
+                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+                }
             } else {
-                $results = array(
-                    'status' => false,
-                    'message' => 'Identifiant ou mot de passe incorrect',
-                    'group' => null
-                );
-
-                $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+                $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
             }
         } else {
-            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
         }
     }
 
