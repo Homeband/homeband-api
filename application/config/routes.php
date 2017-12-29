@@ -88,6 +88,17 @@ $route['api/groupes/(:num)/avis/(:num)'] = 'api/groupes/avis_detail/$1/$2';
 $route['api/groupes/(:num)/annonces'] = 'api/groupes/annonces/$1';
 $route['api/groupes/(:num)/annonces/(:num)'] = 'api/groupes/annonce_detail/$1/$2';
 
+//Utilisateurs
+$route['api/utilisateurs'] = 'api/utilisateurs';
+$route['api/utilisateurs/(:num)'] = 'api/utilisateurs/detail/$1';
+
+$route['api/utilisateurs/(:num)/groupes'] = 'api/utilisateurs/U_groupes/$1';
+$route['api/utilisateurs/(:num)/groupes/(:num)'] = 'api/utilisateurs/U_groupes/$1/$2';
+
+
+$route['api/utilisateurs/(:num)/groupes'] = 'api/utilisateurs/U_avis/$1';
+$route['api/utilisateurs/(:num)/groupes/(:num)'] = 'api/utilisateurs/U_avis/$1/$2';
+
 // Styles
 $route['api/styles'] = 'api/styles';
 

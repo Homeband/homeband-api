@@ -465,7 +465,7 @@ class Groupes extends REST_Controller
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
 
-        $comments = $this->avis->lister($id_groupe, $date_debut, $date_fin, $qte);
+        $comments = $this->avis->lister($id_groupe,0, $date_debut, $date_fin, $qte);
 
         $results = array(
             'status' => true,

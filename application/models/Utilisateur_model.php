@@ -2,29 +2,14 @@
 
 class Utilisateur_model extends CI_Model
 {
-    //Classe private car pas besoin d'être accessible ailleurs + get et set creer dans cette classe
-    private static $db;
-
-    private $id_utilisateur=0;
-    private $id_adresses=0;
-    private $email='';
-    private $login='';
-    private $mot_de_passe='';
-    private $nom='';
-    private $prenom='';
-    private $est_actif=0;
-
+    private $table="utilisateurs";
     public function __construct()
     {
         parent::__construct();
-        //self:: = $this sauf qu'on fait référence à l'objet courrant déclarer en static donc pas utilisation this mais self
-        // Propre à codeigniter c'est pour loader librairies db en static
-        self::$db = &get_instance()->db;
     }
 
     public function lister($cp, $rayon){
-        $this->db->from('');
-        $this->db->where();
+        $this->db->from('utilisateurs');
         $this->db->where('est_actif', true);
 
         //code posatl dans table ville
@@ -39,11 +24,11 @@ class Utilisateur_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->result('');
+        return $query->result('Utilisateur');
     }
     public function ajouter($user){
 
-        if($this->db->insert('utilisateur', $user)){
+        if($this->db->insert('utilisateurs', $user)){
             return $this->db->insert_id();
         } else {
             return 0;
@@ -51,7 +36,7 @@ class Utilisateur_model extends CI_Model
     }
 
     public function recuperer($id_utilisateurs){
-        $this->db->from('utilisateur');
+        $this->db->from('utilisateurs');
         $this->db->where('id_utilisateurs', $id_utilisateurs);
         $this->db->where('est_actif', true);
 
@@ -63,12 +48,12 @@ class Utilisateur_model extends CI_Model
     public function modifier($user, $id_utilisateurs){
         $this->db->where('id_utilisateurs', $id_utilisateurs);
 
-        return $this->db->update('utilisateur', $user);
+        return $this->db->update('utilisateurs', $user);
     }
 
     public function supprimer($id_utilisateurs){
         // Préparation de la requête
-        $this->db->from('utilisateur');
+        $this->db->from($this->table);
 
         // Modification du statut est_actif à false
         $this->db->set('est_actif', false);
