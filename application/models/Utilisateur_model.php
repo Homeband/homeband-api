@@ -26,8 +26,8 @@ class Utilisateur_model extends CI_Model
 
         return $query->result('Utilisateur');
     }
-    public function ajouter($user){
 
+    public function ajouter($user){
         if($this->db->insert('utilisateurs', $user)){
             return $this->db->insert_id();
         } else {
@@ -62,5 +62,45 @@ class Utilisateur_model extends CI_Model
         return $this->db->update();
     }
 
+    public function connecter($login, $mot_de_passe){
+
+        $this->db->from('utilisateurs');
+        // requête de type where 'login' = 'Chris'
+        $this->db->where('login', $login);
+        //$this->db->where('mot_de_passe', $this->mot_de_passe);
+        $this->db->where('est_actif', TRUE);
+        // Select * from
+        $query = $this->db->get();
+        //selectionne la première ligne
+        $row = $query->row(0, 'Utilisateur');
+
+        // Si variable row = à quelque chose
+        if(isset($row) && $row->check_password($mot_de_passe)) {
+            // Connexion réussie
+
+            // Génération du CK pour la session
+            $ck = random_string('alnum', 48);
+
+            $this->_update_ck($row->id_utilisateurs, $ck);
+
+            $row->api_ck = $ck;
+            $row->mot_de_passe = '';
+
+            //Objet courant va comprendre tout ça donc $user dans controller Welcome sera = à ça
+            return $row;
+
+        } else{
+            // Echec de la connexion
+
+            return NULL;
+        }
+    }
+
+    private function _update_ck($id_utilisateurs, $ck){
+        $this->db->from('utilisateurs');
+        $this->db->where('id_utilisateurs', $id_utilisateurs);
+        $this->db->set('api_ck', $ck);
+        $this->db->update();
+    }
 
 }

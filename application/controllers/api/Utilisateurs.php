@@ -31,6 +31,7 @@ class Utilisateurs extends REST_Controller
 
     public function index_post(){
         $user = new Utilisateur($this->post('user'));
+        $user->hash_password();
         $id = $this->utilisateur->ajouter($user);
 
         if($id > 0){
@@ -41,7 +42,7 @@ class Utilisateurs extends REST_Controller
                 'user' => $user
             );
             $this->response($results, REST_Controller::HTTP_OK);
-        }else{
+        } else {
             $results = array(
                 'status' => false,
                 'message' => 'Une erreur est survenue lors de la création de l\'annonce.',
@@ -49,8 +50,8 @@ class Utilisateurs extends REST_Controller
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
-
     }
+
     public function detail_get($id_utilisateurs){
         $user = $this->utilisateur->recuperer($id_utilisateurs);
 
