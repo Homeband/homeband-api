@@ -26,9 +26,15 @@ class Groupe_model extends CI_Model
         $this->db->update('groupes');
     }
 
-    public function connecter($groupe){
+    /**
+     * Connexion à l'application WEB
+     * @param $login Login
+     * @param $mot_de_passe Mot de passe
+     * @return null Fiche du groupe
+     */
+    public function connecter($login, $mot_de_passe){
         // requête de type where 'login' = 'Chris'
-        $this->db->where('login', $groupe->login);
+        $this->db->where('login', $login);
         //$this->db->where('mot_de_passe', $this->mot_de_passe);
         $this->db->where('est_actif', TRUE);
         // Select * from
@@ -37,7 +43,7 @@ class Groupe_model extends CI_Model
         $row = $query->row(0, 'Groupe');
 
         // Si variable row = à quelque chose
-        if(isset($row) && $row->check_password($groupe->mot_de_passe)) {
+        if(isset($row) && $row->check_password($mot_de_passe)) {
             // Connexion réussie
 
             // Génération du CK pour la session
