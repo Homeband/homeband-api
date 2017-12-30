@@ -2,32 +2,25 @@
 
 class Ville_model extends CI_Model
 {
-    public $code_postal;
-    public $est_actif;
-    public $id_villes;
-    public $nom;
+    private $table = 'villes';
 
+    public function recuperer($id_villes){
+        $this->db->from($this->table);
+        $this->db->where('id_villes', $id_villes);
+        $this->db->where('est_actif', true);
 
-    public function getByCodePostal(){
-        $this->db->where('code_postal',$this->code_postal);
-        $this->db->where('est_actif',true);
-        $query = $this->db->get('villes');
-        $villes = $query->result('Ville_model');
+        $query = $this->db->get();
 
-        return $villes;
+        return $query->row(0, 'Ville');
     }
 
-    public function listAll(){
-        $this->db->where('est_actif',true);
-        $query = $this->db->get('villes');
-        $villes = $query->result('Ville_model');
-
-        return $villes;
-    }
-
-    public function lister(){
+    public function lister($cp){
         $this->db->from('villes');
         $this->db->where('est_actif',true);
+
+        if(isset($cp) && $cp > 0){
+            $this->db->where('code_postal', $cp);
+        }
 
         $query = $this->db->get();
 

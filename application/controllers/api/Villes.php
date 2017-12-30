@@ -12,49 +12,31 @@ class Villes extends REST_Controller
     public function index_get(){
 
         $cp = $this->get('cp');
+        $villes = $this->villes->lister($cp);
 
-        if($cp <= 0) {
-            $villes = $this->villes->lister();
+        $results = array(
+            'status' => true,
+            'villes' => $villes
+        );
 
-            $results = array(
-                'status' => true,
-                'liste' => $villes
-            );
-
-            $this->response($results, REST_Controller::HTTP_OK);
-        } else {
-            $villes = $this->villes->getByCP($cp);
-
-            $results = array(
-                'status' => true,
-                'liste' => $villes
-            );
-
-            $this->response($results, REST_Controller::HTTP_OK);
-        }
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
     public function index_post(){
-        $villes = $this->post('villes');
-        $new_villes = array();
-        foreach($villes as $ville) {
-            $ville = arrayToObject($ville);
-            set_time_limit(300);
-            //$tab = array()$this->villes->getByCp($ville->zip);
-            //if (empty($tab)) {
-                $ma_ville = new Ville();
-                $ma_ville->code_postal = $ville->zip;
-                $ma_ville->nom = $ville->city;
-                $ma_ville->lat = $ville->lat;
-                $ma_ville->lon = $ville->lng;
-                $ma_ville->est_actif = true;
+        $ville = new Ville($this->post('ville'));
+    }
 
-                $this->villes->ajouter($ma_ville);
-                $new_villes[] = $ma_ville;
-            //}
-        }
+    public function detail_get($id_villes){
+        $ville = $this->villes->recuperer($id_villes);
 
-        $this->response($new_villes, REST_Controller::HTTP_OK);
+        if($ville != null){}
+        $results = array(
+            'status' => true,
+            'message' => 'Opération réussie',
+            'ville' => $ville
+        );
+
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 
     public function geo_get(){
