@@ -18,7 +18,7 @@ class Homeband_api
     /**
      * Sign the requests to Homeband API
      */
-    public function check($ck_type = 1, $ck_force = true){
+    public function check($ck_type = 1, &$id = NULL, $ck_force = true){
 
         $ts_checked = false;
         $as_checked = false;
@@ -50,25 +50,26 @@ class Homeband_api
             if(!empty($ck)){
                 switch($ck_type){
                     case 1 :
-                        $consumer_checked = $this->_check_ck_groupes($ck);
+                        $consumer_checked = $this->_check_ck_groupes($ck, $id);
                         break;
 
                     case 2 :
-                        $consumer_checked = $this->_check_ck_utilisateurs($ck);
+                        $consumer_checked = $this->_check_ck_utilisateurs($ck, $id);
                         break;
 
                     case 3 :
-                        $consumer_checked = $this->_check_ck_administrateurs($ck);
+                        $consumer_checked = $this->_check_ck_administrateurs($ck, $id);
                         break;
 
                     case 4 :
-                        $consumer_checked = ($this->_check_ck_groupes($ck) || $this->_check_ck_utilisateurs($ck) || $this->_check_ck_administrateurs($ck));
+                        $consumer_checked = ($this->_check_ck_groupes($ck, $id) || $this->_check_ck_utilisateurs($ck, $id) || $this->_check_ck_administrateurs($ck, $id));
                         break;
                 }
             }
         } else {
             $consumer_checked = true;
         }
+
 
         // Check signature
         if($ts_checked && $consumer_checked && $as_checked){
@@ -103,18 +104,26 @@ class Homeband_api
     /**
      * Check the consumer key exist in 'groupes' table
      */
-    private function _check_ck_groupes($ck){
+    private function _check_ck_groupes($ck, &$id){
         $ci = &get_instance();
         $ci->db->from('groupes');
         $ci->db->where('api_ck', $ck);
+        $query = $ci->db->get();
+        $groupe = $query->row(0, 'Groupe');
 
-        return ($ci->db->count_all_result() == 1);
+
+        if(isset($groupe)){
+            $id = $groupe->id_groupes;
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Check the consumer key exist in 'utilisateurs' table
      */
-    private function _check_ck_utilisateurs($ck){
+    private function _check_ck_utilisateurs($ck, &$id){
         $ci = &get_instance();
         $ci->db->from('utilisateurs');
         $ci->db->where('api_ck', $ck);
@@ -125,7 +134,7 @@ class Homeband_api
     /**
      * Check the consumer key exist in 'administrateurs' table
      */
-    private function _check_ck_administrateurs($ck){
+    private function _check_ck_administrateurs($ck, &$id){
         $ci = &get_instance();
         $ci->db->from('administrateurs');
         $ci->db->where('api_ck', $ck);

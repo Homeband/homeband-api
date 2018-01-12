@@ -73,7 +73,7 @@ class Sessions extends REST_Controller
     }
 
     private function _connexion_groupe($login, $password){
-        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, false)) {
+        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, $id, false)) {
             if (isset($login) && isset($password)) {
 
                 $groupe = $this->groupes->connecter($login, $password);
