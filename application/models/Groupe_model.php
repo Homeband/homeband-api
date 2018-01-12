@@ -129,7 +129,7 @@ class Groupe_model extends CI_Model
         // Préparation de la requête
         $this->db->where('id_groupes' ,$groupe->id_groupes);
         foreach(get_object_vars($groupe) as $att => $val){
-            if(($att != 'mot_de_passe' && $att != 'id_groupes') || ($att == 'mot_de_passe' && !empty($val))){
+            if(($att != 'api_ck' && $att != 'mot_de_passe' && $att != 'id_groupes') || ($att == 'mot_de_passe' && !empty($val))){
                 $this->db->set($att, $val);
             }
         }
