@@ -17,6 +17,7 @@ class Groupes extends REST_Controller
         $this->load->model('album_model', 'albums');
         $this->load->model('avis_model', 'avis');
         $this->load->model('annonce_model', 'annonces');
+        $this->load->model('utilisateur_model', 'utilisateurs');
     }
 
     /**
@@ -53,7 +54,7 @@ class Groupes extends REST_Controller
         // Création et envoi de la réponse
         $results = array(
             'status' => true,
-            'message' => 'Connexion réussie !',
+            'message' => 'Opération réussie !',
             'groups' => $liste
         );
 
@@ -64,40 +65,49 @@ class Groupes extends REST_Controller
     /**
      * Création d'un groupe
      */
-    public function index_post(){
-        // Récupération du paramètre nommé 'group' depuis le client ( ex : inscription dans le controleur groupes sur homeband , ligne avec $result = $this->rest->post('groupes', array("group" => $group)); )
-        // Traduction de cette ligne : variable $result = rest c'est l'appelle à l'API avec la méthode post , ( 1er paramètres c'est le nom du controlleur à appeller sur API comme par ex : 'groupes/test'
-        // ## Exemple de tableau associatif dans homeband/groupes/connexion
-        // Et le dernier paramètres est un tableau associatif " => " , "group" c'sst le nom du parametre de l'API on pourrait l'appeller test ,
-        $group_post = $this->post('group');
-        $group = new Groupe($group_post);
-        $group->hash_password();
+    public function index_post()
+    {
 
-        // TODO : Vérifier les champs obligatoires
+        if ($this->homeband_api->check(0, $id, false)) {
 
-        if($this->groupes->verifie_login($group->login)) {
-            if ($this->groupes->inscrire($group)) {
-                $results = array(
-                    'status' => true,
-                    'message' => 'Inscription réussie !'
-                );
+            // Récupération du paramètre nommé 'group' depuis le client ( ex : inscription dans le controleur groupes sur homeband , ligne avec $result = $this->rest->post('groupes', array("group" => $group)); )
+            // Traduction de cette ligne : variable $result = rest c'est l'appelle à l'API avec la méthode post , ( 1er paramètres c'est le nom du controlleur à appeller sur API comme par ex : 'groupes/test'
+            // ## Exemple de tableau associatif dans homeband/groupes/connexion
+            // Et le dernier paramètres est un tableau associatif " => " , "group" c'sst le nom du parametre de l'API on pourrait l'appeller test ,
+            $group_post = $this->post('group');
+            $group = new Groupe($group_post);
+            $group->hash_password();
+            $group->id_groupes = 0;
+            $group->api_ck = "";
 
-                $this->response($results, REST_Controller::HTTP_CREATED);
+            // TODO : Vérifier les champs obligatoires
+
+            if ($this->groupes->verifie_login($group->login)) {
+                if ($this->groupes->inscrire($group)) {
+                    $results = array(
+                        'status' => true,
+                        'message' => 'Inscription réussie !'
+                    );
+
+                    $this->response($results, REST_Controller::HTTP_CREATED);
+                } else {
+                    $results = array(
+                        'status' => false,
+                        'message' => 'Erreur lors de l\'inscription'
+                    );
+
+                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+                }
             } else {
                 $results = array(
                     'status' => false,
-                    'message' => 'Erreur lors de l\'inscription'
+                    'message' => 'Le login n\'est pas disponible.'
                 );
 
                 $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
             }
         } else {
-            $results = array(
-                'status' => false,
-                'message' => 'Le login n\'est pas disponible.'
-            );
-
-            $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -131,27 +141,32 @@ class Groupes extends REST_Controller
      * @param $id_groupe
      */
     public function detail_put($id_groupe){
-        $groupe = new Groupe($this->put('group'));
-        if(!empty($groupe->mot_de_passe)){
-            $groupe->hash_password();
-        }
+        $id_check = 0;
+        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, $id_check) && $id_check == $id_groupe){
+            $groupe = new Groupe($this->put('group'));
+            if(!empty($groupe->mot_de_passe)){
+                $groupe->hash_password();
+            }
 
-        if ($this->groupes->modifier($groupe)){
-            $groupe = $this->groupes->recuperer($id_groupe);
-            $results = array(
-                'status' => true,
-                'message' => 'Operation reussie !',
-                'group' => $groupe
-            );
-            $this->response($results, REST_Controller::HTTP_OK);
-        }
-        else{
-            $results = array(
-                'status' => false,
-                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
-                'group' => null
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+            if ($this->groupes->modifier($groupe)){
+                $groupe = $this->groupes->recuperer($id_groupe);
+                $results = array(
+                    'status' => true,
+                    'message' => 'Operation reussie !',
+                    'group' => $groupe
+                );
+                $this->response($results, REST_Controller::HTTP_OK);
+            }
+            else{
+                $results = array(
+                    'status' => false,
+                    'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                    'group' => null
+                );
+                $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+            }
+        } else {
+            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
         }
     }
 
@@ -464,8 +479,14 @@ class Groupes extends REST_Controller
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
+        //$valides = isset($this->get('valides')) ? (bool)$this->get('valides') : false;
+        //$attente = $this->get('attente');
 
         $comments = $this->avis->lister($id_groupe,0, $date_debut, $date_fin, $qte);
+        foreach($comments as $comment){
+            $user = $this->utilisateurs->recuperer($comment->id_utilisateurs);
+            $comment->username = isset($user) ? $user->login : "Inconnu";
+        }
 
         $results = array(
             'status' => true,
@@ -653,7 +674,6 @@ class Groupes extends REST_Controller
 
     // Login
     public function login_post(){
-
         if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, false)) {
             $login = $this->post('login');
             $pass = $this->post('mot_de_passe');
