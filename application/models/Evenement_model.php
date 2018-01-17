@@ -9,7 +9,7 @@
 class Evenement_model extends CI_Model
 {
 
-    public function lister($id_groupes, $date_debut, $date_fin, $qte){
+    public function lister($id_groupes, $date_debut, $date_fin, $qte, $detail){
         $this->db->from('evenements');
         $this->db->where('id_groupes', $id_groupes);
         $this->db->where('est_actif', true);
@@ -28,7 +28,19 @@ class Evenement_model extends CI_Model
 
         $query = $this->db->get();
 
-        return $query->result('Evenement');
+        $events = $query->result('Evenement');
+        if($detail){
+            foreach($events as $event){
+                $this->db->from("details_evenements");
+                $this->db->where("est_actif", true);
+                $this->db->where("id_evenements", $event->id_evenements);
+
+                $query_detail = $this->db->get();
+                $event->details = $query_detail->result("EvenementDetail");
+            }
+        }
+
+        return $events;
     }
 
     public function ajouter($event, $id_groupes = 0){

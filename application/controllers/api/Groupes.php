@@ -274,16 +274,34 @@ class Groupes extends REST_Controller
 
     // Evenements
     public function evenements_get($id_groupe){
-        $date_debut = $this->get('date_debut');
-        $date_fin = $this->get('date_fin');
-        $qte = $this->get('qte');
-        $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte);
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-            'events' => $events
-        );
-        $this->response($results, REST_Controller::HTTP_OK);
+        try{
+            $date_debut = $this->get('date_debut');
+            $date_fin = $this->get('date_fin');
+            $qte = $this->get('qte');
+            $detail = $this->get('detail');
+
+            // Vérification des paramètres
+            if(!isset($detail)){
+                $detail = false;
+            }
+
+            // Traitement de la requête
+            $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte, $detail);
+            $results = array(
+                'status' => true,
+                'message' => 'Operation reussie !',
+                'events' => $events
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        } catch (Exception $ex) {
+            $results = array(
+                'status' => false,
+                'message' => $ex->getMessage(),
+                'events' => null
+            );
+            $this->response($results, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     public function evenements_post($id_groupe){
