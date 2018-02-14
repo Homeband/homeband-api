@@ -76,24 +76,32 @@ class Utilisateurs extends REST_Controller
         }
 
     public function detail_put($id_utilisateurs){
-        $user = $this->put('user');
-        $user = arrayToObject($user);
-        if ($this->utilisateur->modifier($user,$id_utilisateurs)){
-            $user = $this->utilisateur->recuperer($id_utilisateurs);
-            $results = array(
-                'status' => true,
-                'message' => 'Operation reussie !',
-                'user' => $user
-            );
-            $this->response($results, REST_Controller::HTTP_OK);
-        }
-        else{
-            $results = array(
-                'status' => false,
-                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
-                'user' => null
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        $initialUser = $this->utilisateur->recuperer($id_utilisateurs);
+        if($initialUser != null){
+        
+            $user = new Utilisateur($this->put('user'));
+            if($user->mot_de_passe != $initialUser->mot_de_passe){
+                $user->hash_password();    
+            }
+            
+            //$user = arrayToObject($user);
+            if ($this->utilisateur->modifier($user,$id_utilisateurs)){
+                $user = $this->utilisateur->recuperer($id_utilisateurs);
+                $results = array(
+                    'status' => true,
+                    'message' => 'Operation reussie !',
+                    'user' => $user
+                );
+                $this->response($results, REST_Controller::HTTP_OK);
+            }
+            else{
+                $results = array(
+                    'status' => false,
+                    'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
+                    'user' => null
+                );
+                $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+            }
         }
 
     }
