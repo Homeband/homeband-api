@@ -36,20 +36,23 @@ class Groupes extends REST_Controller
         $cp = $this->get('cp');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
+        $lat = $this->get('lat');
+        $lon = $this->get('lon');
+
 
         // Vérifications pour le rayon
-        if (isset($rayon) && !isset($cp)){
+        if (isset($rayon) && (!isset($cp) && (!isset($lat) || !isset($lon)))){
             // Création et envoi de la réponse
             $results = array(
                 'status' => false,
-                'message' => 'Le code postal est requis pour filtrer sur le rayon !',
+                'message' => 'Le code postal ou les coordonnées géographiques (lat/lon) sont requis pour filtrer sur le rayon !',
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
 
         }
 
         // Récupération de la liste des groupes correspondants aux critères
-        $liste = $this->groupes->lister($cp,$rayon,$styles);
+        $liste = $this->groupes->lister($cp, $lat, $lon, $rayon, $styles);
 
         // Création et envoi de la réponse
         $results = array(

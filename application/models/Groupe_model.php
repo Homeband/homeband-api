@@ -67,24 +67,56 @@ class Groupe_model extends CI_Model
     /**
      * Recherche une liste de groupes sur certains critères
      * @param $cp
+     * @param $lat
+     * @param $lon
      * @param $rayon
      * @param $styles
      * @return mixed
      */
-    public function lister($cp, $rayon, $styles){
+    public function lister($cp, $lat, $lon, $rayon, $styles){
+        $ville = new Ville();
+
+        if(isset($cp)){
+            $this->db->select('*');
+            $this->db->from('villes');
+            $this->db->where('code_postal', $cp);
+            $req = $this->db->get();
+
+            if(isset($req)){
+                $ville = $req->row(0,'Ville');
+            }
+
+        }
+
         // Sélection de tous les champs de la table groupes [est_actif = 1]
         $this->db->select('groupes.*');
         $this->db->from('groupes');
         $this->db->where('groupes.est_actif', true);
 
-        // Filtrage sur le code postal
-        if(isset($cp)){
+        // Filtrage sur le rayon
+        if(isset($rayon)){
             $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
-            $this->db->where('villes.code_postal' ,$cp);
 
-            // Filtrage sur le rayon
-            if(isset($rayon)){
+            // Filtrage sur le code postal
+            if(isset($cp)){
+                $distance = 'DISTANCE(' . $this->db->escape($ville->lat) . ', ' . $this->db->escape($ville->lon) . ', villes.lat, villes.lon)';
 
+                // Sélection de la distance en plus
+                $this->db->select($distance . ' as distance');
+
+                // Groupe de conditions pour pouvoir faire un 'OR' uniquement entre ces conditions là
+                $this->db->group_start();
+                $this->db->where('villes.code_postal' ,$cp);
+                $this->db->or_where($distance . ' <= ' . $rayon);
+                $this->db->group_end();
+            } else {
+                $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
+            }
+        } else {
+            // Filtrage sur le code postal
+            if(isset($cp)){
+                $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
+                $this->db->where('villes.code_postal' ,$cp);
             }
         }
 
@@ -97,7 +129,7 @@ class Groupe_model extends CI_Model
 
         // Récupère tout les champs de la table 'groupes' et renvoie la liste
         $query = $this->db->get();
-        return $query->result();
+        return $query->result('Groupe');
 
     }
 
