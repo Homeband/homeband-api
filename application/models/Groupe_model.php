@@ -97,6 +97,7 @@ class Groupe_model extends CI_Model
         if(isset($rayon)){
             $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
 
+            $this->db->group_start();
             // Filtrage sur le code postal
             if(isset($cp)){
                 $distance = 'DISTANCE(' . $this->db->escape($ville->lat) . ', ' . $this->db->escape($ville->lon) . ', villes.lat, villes.lon)';
@@ -105,13 +106,21 @@ class Groupe_model extends CI_Model
                 $this->db->select($distance . ' as distance');
 
                 // Groupe de conditions pour pouvoir faire un 'OR' uniquement entre ces conditions là
-                $this->db->group_start();
+
                 $this->db->where('villes.code_postal' ,$cp);
                 $this->db->or_where($distance . ' <= ' . $rayon);
-                $this->db->group_end();
-            } else {
-                $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
             }
+
+            if(isset($lat) && isset($lon)){
+                if(isset($cp)){
+                    $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
+                } else {
+                    $this->db->or_where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
+                }
+
+            }
+
+            $this->db->group_end();
         } else {
             // Filtrage sur le code postal
             if(isset($cp)){
