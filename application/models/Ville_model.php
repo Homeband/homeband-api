@@ -14,12 +14,22 @@ class Ville_model extends CI_Model
         return $query->row(0, 'Ville');
     }
 
-    public function lister($cp){
+    public function lister($cp, $order){
         $this->db->from('villes');
         $this->db->where('est_actif',true);
 
         if(isset($cp) && $cp > 0){
             $this->db->where('code_postal', $cp);
+        }
+
+        if(isset($order)){
+            switch($order){
+                case "cp" :
+                    $this->db->order_by('code_postal', 'ASC');
+                    break;
+                case "nom" :
+                    $this->db->order_by('nom', 'ASC');
+            }
         }
 
         $query = $this->db->get();

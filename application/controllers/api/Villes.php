@@ -12,7 +12,10 @@ class Villes extends REST_Controller
     public function index_get(){
 
         $cp = $this->get('cp');
-        $villes = $this->villes->lister($cp);
+        $order = $this->get('order');
+
+        $villes = $this->villes->lister($cp, $order);
+
 
         $results = array(
             'status' => true,
