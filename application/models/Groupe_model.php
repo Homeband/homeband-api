@@ -100,7 +100,7 @@ class Groupe_model extends CI_Model
             $this->db->group_start();
             // Filtrage sur le code postal
             if(isset($cp)){
-                $distance = 'DISTANCE(' . $this->db->escape($ville->lat) . ', ' . $this->db->escape($ville->lon) . ', villes.lat, villes.lon)';
+                $distance = 'DISTANCE('.$this->db->escape($ville->lat).','.$this->db->escape($ville->lon).','.$this->db->escape('villes.lat').','.$this->db->escape('villes.lon').')';
 
                 // Sélection de la distance en plus
                 $this->db->select($distance . ' as distance');
@@ -113,7 +113,7 @@ class Groupe_model extends CI_Model
 
             if(isset($lat) && isset($lon)){
                 if(isset($cp)){
-                    $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
+                    $this->db->or_where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
                 } else {
                     $this->db->or_where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
                 }
@@ -135,7 +135,7 @@ class Groupe_model extends CI_Model
             $this->db->where('styles.id_styles' ,$styles);
         }
 
-
+        //ie($this->db->get_compiled_select());
         // Récupère tout les champs de la table 'groupes' et renvoie la liste
         $query = $this->db->get();
         return $query->result('Groupe');
