@@ -13,6 +13,6 @@ class MY_Exceptions extends CI_Exceptions
 
         die(print_r($message));
         log_message( 'debug', print_r( $message, TRUE ) );
-        throw new Exception(is_array($message) ? $message[1] : $message, $status_code );
+        throw new Exception(is_array($message) ? $message[0] : $message, $status_code );
     }
 }
