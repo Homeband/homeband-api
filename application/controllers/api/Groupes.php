@@ -145,7 +145,7 @@ class Groupes extends REST_Controller
      */
     public function detail_put($id_groupe){
         $id_check = 0;
-        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, $id_check) && $id_check == $id_groupe){
+        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, $id_check, true) && $id_check == $id_groupe){
             $groupe = new Groupe($this->put('group'));
             if(!empty($groupe->mot_de_passe)){
                 $groupe->hash_password();
@@ -169,7 +169,11 @@ class Groupes extends REST_Controller
                 $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
             }
         } else {
-            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
+            $results = array(
+                'status' => false,
+                'message' => 'Accès refusé',
+            );
+            $this->response($results, REST_Controller::HTTP_UNAUTHORIZED);
         }
     }
 
