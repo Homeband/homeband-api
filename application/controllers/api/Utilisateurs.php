@@ -32,6 +32,7 @@ class Utilisateurs extends REST_Controller
     public function index_post(){
         $user = new Utilisateur($this->post('user'));
         $user->hash_password();
+        $user->id_utilisateurs = 0;
         $id = $this->utilisateur->ajouter($user);
 
         if($id > 0){
@@ -66,7 +67,7 @@ class Utilisateurs extends REST_Controller
         } else {
             $results = array(
                 'status' => true,
-                'message' => 'Aucun avis correspondant à l\'ID '.$id_utilisateurs.' pour ce membres.',
+                'message' => 'Aucun utilisateur correspondant à l\'ID '.$id_utilisateurs,
                 'user' => null
             );
 
@@ -83,6 +84,8 @@ class Utilisateurs extends REST_Controller
             if($user->mot_de_passe != $initialUser->mot_de_passe){
                 $user->hash_password();    
             }
+
+            $user->id_utilisateurs = $id_utilisateurs;
             
             //$user = arrayToObject($user);
             if ($this->utilisateur->modifier($user,$id_utilisateurs)){
