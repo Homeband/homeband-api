@@ -109,5 +109,9 @@ $route['api/styles'] = 'api/styles';
 $route['api/evenements'] = 'api/evenements';
 
 
+// Versions
+$route['api/versions'] = 'api/versions';
+
+
 // Tout refuser par défaut
 $route['(.*)'] = "api/apierror";
