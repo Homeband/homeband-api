@@ -11,17 +11,27 @@ class Localisations extends REST_Controller
     const TYPE_COORD_ADDRESS = 1;
     const TYPE_ADDRESS_COORD = 2;
 
+    public function __construct($config = 'rest')
+    {
+        parent::__construct($config);
+        $this->load->library('Geocoding');
+    }
+
     public function index_get(){
+        // Récupération du type d'information à renvoyer
         $type = $this->get("type");
 
+
         if(isset($type)){
+            // En fonction du type d'information demandé
             switch($type){
-                case TYPE_COORD_ADDRESS :
+                case $this::TYPE_COORD_ADDRESS :
+                    // Récupération des coordonées géographiques à traiter
                     $lat = $this->get('lat');
                     $lon = $this->get('lon');
 
                     if(isset($lat) && isset($lon)){
-                        $this->_coordToAddress();
+                        $this->_coordToAddress($lat, $lon);
                     } else {
                         $results = array(
                             "status" => false,
@@ -30,10 +40,11 @@ class Localisations extends REST_Controller
                         $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
                     }
                     break;
-                case TYPE_ADDRESS_COORD :
+                case $this::TYPE_ADDRESS_COORD :
+                    // Récupération de l'adresse à traiter
                     $address = $this->get('address');
                     if(isset($address)){
-                        $this->_addressToCoord();
+                        $this->_addressToCoord($address);
                     } else {
                         $results = array(
                             "status" => false,
@@ -43,6 +54,7 @@ class Localisations extends REST_Controller
                     }
                     break;
                 default:
+                    // Le type n'est pas correct -> Erreur
                     $results = array(
                         "status" => false,
                         "message" => "Le type de requête est incorrect. Les types possibles sont:<br>1 (Coordonnées -> Adresse)<br>2 (Adresse -> Coordonnées)"
@@ -50,6 +62,7 @@ class Localisations extends REST_Controller
                     $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
             }
         } else {
+            // Le type n'est pas fourni -> Erreur
             $results = array(
                 "status" => false,
                 "message" => "Le paramètre 'type' (type de localisation) est obligatoire."
@@ -59,10 +72,38 @@ class Localisations extends REST_Controller
     }
 
     private function _coordToAddress($lat, $lon){
-
+        if(is_numeric($lat) && is_numeric($lon)){
+            $address = $this->geocoding->getAddressFromCoord($lat, $lon);
+            $results = array(
+                "status" => True,
+                "message" => 'Opération réussie',
+                "address" => $address
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else {
+            $results = array(
+                "status" => false,
+                "message" => "La latidute et la longitude doivent être des numériques."
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 
     private function _addressToCoord($address){
-
+        if(!empty($address)){
+            $coord = $this->geocoding->getCoordFromAddress($address);
+            $results = array(
+                "status" => True,
+                "message" => 'Opération réussie',
+                "coord" => $coord
+            );
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else{
+            $results = array(
+                "status" => false,
+                "message" => "Le paramètre 'adresse' est obligatoire et ne peut par être vide."
+            );
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 }

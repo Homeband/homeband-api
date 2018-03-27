@@ -522,6 +522,8 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+$config['google_api_key'] = 'AIzaSyCbfgsxguI6tfXCS4-yyxe7y9wVGpZZGTs';
+
 
 function MyAutoLoader($classname) {
     if (strpos($classname, 'CI_') !== 0) {

@@ -113,5 +113,9 @@ $route['api/evenements'] = 'api/evenements';
 $route['api/versions'] = 'api/versions';
 
 
+// Localisation
+$route['api/localisations'] = "api/localisations";
+
+
 // Tout refuser par défaut
 $route['(.*)'] = "api/apierror";
