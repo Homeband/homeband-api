@@ -18,6 +18,7 @@ class Groupes extends REST_Controller
         $this->load->model('avis_model', 'avis');
         $this->load->model('annonce_model', 'annonces');
         $this->load->model('utilisateur_model', 'utilisateurs');
+        $this->load->library("Geocoding");
     }
 
     /**
@@ -33,26 +34,31 @@ class Groupes extends REST_Controller
        */
 
         // Récupération des paramètres
-        $cp = $this->get('cp');
+        $adresse = $this->get('adresse');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
-        $lat = $this->get('lat');
-        $lon = $this->get('lon');
-
 
         // Vérifications pour le rayon
-        if (isset($rayon) && (!isset($cp) && (!isset($lat) || !isset($lon)))){
+        if (isset($rayon) && (!isset($adresse) || empty($adresse))){
             // Création et envoi de la réponse
             $results = array(
                 'status' => false,
-                'message' => 'Le code postal ou les coordonnées géographiques (lat/lon) sont requis pour filtrer sur le rayon !',
+                'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
 
+        if(isset($adresse) && !empty($adresse)){
+            $coord = $this->geocoding->getCoordFromAddress($adresse.' Belgium');
+            $lat = $coord['lat'];
+            $lon = $coord['lon'];
+        } else {
+            $lat = 0.0;
+            $lon = 0.0;
         }
 
         // Récupération de la liste des groupes correspondants aux critères
-        $liste = $this->groupes->lister($cp, $lat, $lon, $rayon, $styles);
+        $liste = $this->groupes->lister($lat, $lon, $rayon, $styles);
 
         // Création et envoi de la réponse
         $results = array(

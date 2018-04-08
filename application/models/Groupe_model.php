@@ -66,27 +66,13 @@ class Groupe_model extends CI_Model
 
     /**
      * Recherche une liste de groupes sur certains critères
-     * @param $cp
      * @param $lat
      * @param $lon
      * @param $rayon
      * @param $styles
      * @return mixed
      */
-    public function lister($cp, $lat, $lon, $rayon, $styles){
-        $ville = new Ville();
-
-        if(isset($cp)){
-            $this->db->select('*');
-            $this->db->from('villes');
-            $this->db->where('code_postal', $cp);
-            $req = $this->db->get();
-
-            if(isset($req)){
-                $ville = $req->row(0,'Ville');
-            }
-
-        }
+    public function lister($lat, $lon, $rayon, $styles){
 
         // Sélection de tous les champs de la table groupes [est_actif = 1]
         $this->db->select('groupes.*');
@@ -94,39 +80,16 @@ class Groupe_model extends CI_Model
         $this->db->where('groupes.est_actif', true);
 
         // Filtrage sur le rayon
-        if(isset($rayon)){
+        if(isset($rayon) && $rayon > 0){
             $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
+            $distance = 'GetDistance('.$this->db->escape($lat).','.$this->db->escape($lon).', villes.lat, villes.lon)';
 
-            $this->db->group_start();
-            // Filtrage sur le code postal
-            if(isset($cp)){
-                $distance = 'GetDistance('.$this->db->escape($ville->lat).','.$this->db->escape($ville->lon).','.$this->db->escape('villes.lat').','.$this->db->escape('villes.lon').')';
+            // Sélection de la distance en plus
+            $this->db->select($distance . ' as distance');
 
-                // Sélection de la distance en plus
-                $this->db->select($distance . ' as distance');
+            // Condition sur le rayon
+            $this->db->where($distance . ' <= ' . $rayon);
 
-                // Groupe de conditions pour pouvoir faire un 'OR' uniquement entre ces conditions là
-
-                $this->db->where('villes.code_postal' ,$cp);
-                $this->db->or_where($distance . ' <= ' . $rayon);
-            }
-
-            if(isset($lat) && isset($lon)){
-                if(isset($cp)){
-                    $this->db->or_where('GetDistance(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                } else {
-                    $this->db->or_where('GetDistance(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                }
-
-            }
-
-            $this->db->group_end();
-        } else {
-            // Filtrage sur le code postal
-            if(isset($cp)){
-                $this->db->join('villes', 'villes.id_villes = groupes.id_villes');
-                $this->db->where('villes.code_postal' ,$cp);
-            }
         }
 
         // Filtrage sur le style de musique
@@ -135,8 +98,6 @@ class Groupe_model extends CI_Model
             $this->db->where('styles.id_styles' ,$styles);
         }
 
-        //ie($this->db->get_compiled_select());
-        // Récupère tout les champs de la table 'groupes' et renvoie la liste
         $query = $this->db->get();
         return $query->result('Groupe');
 
