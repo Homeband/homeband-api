@@ -68,6 +68,11 @@ class Geocoding
     function getAddressFromCoord($lat = 0.0, $lon = 0.0){
         $address = "";
 
+        $rue = "";
+        $numero = "";
+        $cp = "";
+        $ville = "";
+
         $this->_ci->rest_client->initialize(array('server' => $this->api_url));
         $latlng = $lat . ',' . $lon;
         $params = array(
@@ -76,9 +81,28 @@ class Geocoding
         );
 
         $api_results = $this->_ci->rest_client->get("json", $params);
-
         if (isset($api_results) && !empty($api_results) && $api_results->status === "OK") {
-            $address = $api_results->results[0]->formatted_address;
+            $address_components = $api_results->results[0]->address_components;
+
+            foreach($address_components as $component){
+                switch($component->types[0]){
+                    case 'street_number' :
+                        $tab = explode('-',$component->short_name);
+                        $numero = end($tab);
+                        break;
+                    case 'route' :
+                        $rue = $component->short_name;
+                        break;
+                    case 'locality' :
+                        $ville = $component->short_name;
+                        break;
+                    case 'postal_code' :
+                        $cp = $component->short_name;
+                        break;
+                }
+            }
+
+            $address = "$rue $numero, $cp $ville";
         }
 
         return $address;
