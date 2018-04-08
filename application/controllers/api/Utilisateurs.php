@@ -26,6 +26,7 @@ class Utilisateurs extends REST_Controller
             'message' => 'Operation reussie !',
             'users' => $users
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
     }
 
@@ -37,11 +38,13 @@ class Utilisateurs extends REST_Controller
 
         if($id > 0){
             $user = $this->utilisateur->recuperer($id);
+
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
                 'user' => $user
             );
+
             $this->response($results, REST_Controller::HTTP_OK);
         } else {
             $results = array(
@@ -49,6 +52,7 @@ class Utilisateurs extends REST_Controller
                 'message' => 'Une erreur est survenue lors de la création de l\'annonce.',
                 'user' => null
             );
+
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
@@ -90,11 +94,13 @@ class Utilisateurs extends REST_Controller
             //$user = arrayToObject($user);
             if ($this->utilisateur->modifier($user,$id_utilisateurs)){
                 $user = $this->utilisateur->recuperer($id_utilisateurs);
+
                 $results = array(
                     'status' => true,
                     'message' => 'Operation reussie !',
                     'user' => $user
                 );
+
                 $this->response($results, REST_Controller::HTTP_OK);
             }
             else{
@@ -103,6 +109,7 @@ class Utilisateurs extends REST_Controller
                     'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
                     'user' => null
                 );
+
                 $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
             }
         }
@@ -115,6 +122,7 @@ class Utilisateurs extends REST_Controller
             'status' => true,
             'message' => 'Operation reussie !',
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
 
     }
@@ -132,6 +140,7 @@ class Utilisateurs extends REST_Controller
             'message' => 'Operation reussie !',
             'groups' => $groups
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
     }
 
@@ -139,22 +148,21 @@ class Utilisateurs extends REST_Controller
         $id_groupes = $this->post('group_id');
        if ($this->utilisateur_groupe->ajouter($id_utilisateurs,$id_groupes))
        {
-
-
-
             $groups = $this->utilisateur_groupe->recuperer($id_utilisateurs,$id_groupes);
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
                 'groups' => $groups
             );
+
             $this->response($results, REST_Controller::HTTP_OK);
-        }else{
+        } else {
             $results = array(
                 'status' => false,
                 'message' => 'Une erreur est survenue lors de la création de l\' ajout du groupe en favoris.',
                 'groups' => null
             );
+
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
 
@@ -162,10 +170,12 @@ class Utilisateurs extends REST_Controller
 
     public function U_groupes_delete($id_utilisateurs,$id_groupes){
         $this->utilisateur_groupe->supprimer($id_utilisateurs,$id_groupes);
+
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
 
     }
@@ -183,6 +193,7 @@ class Utilisateurs extends REST_Controller
             'message' => 'Operation reussie !',
             'annonces' => $avis
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
 }
 
@@ -190,15 +201,14 @@ class Utilisateurs extends REST_Controller
         $id_groupes = $this->post('group_id');
         if ($this->utilisateur_groupe->ajouter($id_utilisateurs,$id_groupes))
         {
-
-
-
             $groups = $this->utilisateur_groupe->recuperer($id_utilisateurs,$id_groupes);
+
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
                 'groups' => $groups
             );
+
             $this->response($results, REST_Controller::HTTP_OK);
         }else{
             $results = array(
@@ -206,6 +216,7 @@ class Utilisateurs extends REST_Controller
                 'message' => 'Une erreur est survenue lors de la création de l\' ajout du groupe en favoris.',
                 'groups' => null
             );
+
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
 
@@ -213,10 +224,12 @@ class Utilisateurs extends REST_Controller
 
     public function U_avis_delete($id_utilisateurs,$id_groupes){
         $this->utilisateur_groupe->supprimer($id_utilisateurs,$id_groupes);
+
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
         );
+
         $this->response($results, REST_Controller::HTTP_OK);
 
     }
