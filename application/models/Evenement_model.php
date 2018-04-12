@@ -9,29 +9,11 @@
 class Evenement_model extends CI_Model
 {
 
-    public function lister($id_groupes, $date_debut, $date_fin, $qte, $detail, $cp, $lat, $lon, $rayon, $styles){
+    public function lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles){
 
-        // Récupération de la ville correspondant au cp passé en paramètres
-        $ville = new Ville();
-
-        if(isset($cp)){
-            $this->db->select('villes.*');
-            $this->db->from('villes');
-            $this->db->where('code_postal', $cp);
-            $req = $this->db->get();
-
-            if(isset($req)){
-                $ville = $req->row(0,'Ville');
-            }
-        }
-
-        $this->db->distinct();
         $this->db->select('evenements.*');
         $this->db->from('evenements');
         $this->db->where('evenements.est_actif', true);
-
-        $this->db->join('details_evenements', 'details_evenements.id_evenements = evenements.id_evenements');
-        $this->db->where('details_evenements.est_actif', true);
 
         $this->db->join('groupes', 'groupes.id_groupes = evenements.id_groupes');
 
@@ -43,52 +25,27 @@ class Evenement_model extends CI_Model
         // Filtrage sur les dates
         if(isset($date_debut) || isset($date_fin)){
             if(isset($date_debut)){
-                $this->db->where('details_evenements.date_heure >=', $date_debut);
+                $this->db->where('evenements.date_heure >=', $date_debut);
             }
 
             if(isset($date_fin)){
                 $datetime_fin = new DateTime($date_fin);
                 $datetime_fin->setTime(23,59,59);
-                $this->db->where('details_evenements.date_heure <=', $datetime_fin->format('Y-m-d H:i:s'));
+                $this->db->where('evenements.date_heure <=', $datetime_fin->format('Y-m-d H:i:s'));
             }
         }
 
         // Filtrage sur le rayon
         if(isset($rayon)){
-            $this->db->join('adresses', 'adresses.id_adresses = details_evenements.id_adresses');
+
+            $this->db->join('adresses', 'adresses.id_adresses = evenements.id_adresses');
             $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
 
-            $this->db->group_start();
-            // Filtrage sur le code postal
-            if(isset($cp)){
-                $distance = 'DISTANCE(' . $this->db->escape($ville->lat) . ', ' . $this->db->escape($ville->lon) . ', villes.lat, villes.lon)';
+            $distance = 'GetDistance(' . $this->db->escape($lat) . ', ' . $this->db->escape($lon) . ', villes.lat, villes.lon)';
 
-                // Sélection de la distance en plus
-                $this->db->select($distance . ' as distance');
-
-                // Groupe de conditions pour pouvoir faire un 'OR' uniquement entre ces conditions là
-
-                $this->db->where('villes.code_postal' ,$cp);
-                $this->db->or_where($distance . ' <= ' . $rayon);
-            }
-
-            if(isset($lat) && isset($lon)){
-                if(isset($cp)){
-                    $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                } else {
-                    $this->db->or_where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                }
-
-            }
-
-            $this->db->group_end();
-        } else {
-            // Filtrage sur le code postal
-            if(isset($cp)){
-                $this->db->join('adresses', 'adresses.id_adresses = details_evenements.id_adresses');
-                $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
-                $this->db->where('villes.code_postal' ,$cp);
-            }
+            // Sélection de la distance en plus
+            $this->db->select($distance . ' as distance');
+            $this->db->where($distance .' <= ' . $rayon);
         }
 
         // Filtrage sur le style de musique
@@ -107,64 +64,6 @@ class Evenement_model extends CI_Model
         $query = $this->db->get();
 
         $events = $query->result('Evenement');
-        if($detail){
-            foreach($events as $event){
-                $this->db->select("details_evenements.*");
-                $this->db->from("details_evenements");
-                $this->db->where("details_evenements.est_actif", true);
-                $this->db->where("id_evenements", $event->id_evenements);
-
-                if(isset($date_debut)){
-                    $this->db->where('date_heure >=', $date_debut);
-                }
-
-                if(isset($date_fin)){
-                    $datetime_fin = new DateTime($date_fin);
-                    $datetime_fin->setTime(23,59,59);
-                    $this->db->where('date_heure <=', $datetime_fin->format('Y-m-d H:i:s'));
-                }
-
-                // Filtrage sur le rayon
-                if(isset($rayon)){
-                    $this->db->join('adresses', 'adresses.id_adresses = details_evenements.id_adresses');
-                    $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
-                    $this->db->group_start();
-                    // Filtrage sur le code postal
-                    if(isset($cp)){
-                        $distance = 'DISTANCE(' . $this->db->escape($ville->lat) . ', ' . $this->db->escape($ville->lon) . ', villes.lat, villes.lon)';
-
-                        // Sélection de la distance en plus
-                        $this->db->select($distance . ' as distance');
-
-                        // Groupe de conditions pour pouvoir faire un 'OR' uniquement entre ces conditions là
-
-                        $this->db->where('villes.code_postal' ,$cp);
-                        $this->db->or_where($distance . ' <= ' . $rayon);
-                    }
-
-                    if(isset($lat) && isset($lon)){
-                        if(isset($cp)){
-                            $this->db->where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                        } else {
-                            $this->db->or_where('DISTANCE(villes.lat, villes.lon, '.$lat.', '.$lon.') <=' . $rayon);
-                        }
-
-                    }
-
-                    $this->db->group_end();
-                } else {
-                    // Filtrage sur le code postal
-                    if(isset($cp)){
-                        $this->db->join('adresses', 'adresses.id_adresses = details_evenements.id_adresses');
-                        $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
-                        $this->db->where('villes.code_postal' ,$cp);
-                    }
-                }
-
-                $query_detail = $this->db->get();
-                $event->details = $query_detail->result("EvenementDetail");
-            }
-        }
 
         return $events;
     }

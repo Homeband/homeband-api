@@ -18,6 +18,7 @@ class Evenements extends REST_Controller
         $this->load->model('avis_model', 'avis');
         $this->load->model('annonce_model', 'annonces');
         $this->load->model('utilisateur_model', 'utilisateurs');
+        $this->load->library("Geocoding");
     }
 
     public function index_get(){
@@ -25,34 +26,33 @@ class Evenements extends REST_Controller
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
-        $detail = $this->get('detail');
 
         // Récupération des paramètres
-        $cp = $this->get('cp');
+        $adresse = $this->get('adresse');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
-        $lat = $this->get('lat');
-        $lon = $this->get('lon');
-
 
         // Vérifications pour le rayon
-        if (isset($rayon) && (!isset($cp) && (!isset($lat) || !isset($lon)))){
+        if (isset($rayon) && (!isset($adresse) || empty($adresse))){
             // Création et envoi de la réponse
             $results = array(
                 'status' => false,
-                'message' => 'Le code postal ou les coordonnées géographiques (lat/lon) sont requis pour filtrer sur le rayon !',
+                'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-
         }
 
-        // Vérification des paramètres
-        if(!isset($detail)){
-            $detail = false;
+        if(isset($adresse) && !empty($adresse)){
+            $coord = $this->geocoding->getCoordFromAddress($adresse.' Belgium');
+            $lat = $coord['lat'];
+            $lon = $coord['lon'];
+        } else {
+            $lat = 0.0;
+            $lon = 0.0;
         }
 
         // Traitement de la requête
-        $events = $this->evenements->lister($id_groupes, $date_debut, $date_fin, $qte, $detail, $cp, $lat, $lon, $rayon, $styles);
+        $events = $this->evenements->lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
