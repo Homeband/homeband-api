@@ -65,6 +65,9 @@ class Evenement_model extends CI_Model
             $this->db->select('villes.id_villes');
         }
 
+        // Tri par Date et heure d'évènement
+        $this->db->orderby('evenement.date_heure');
+
         //die($this->db->get_compiled_select());
         $query = $this->db->get();
 
