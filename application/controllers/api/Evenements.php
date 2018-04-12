@@ -31,6 +31,7 @@ class Evenements extends REST_Controller
         $adresse = $this->get('adresse');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
+        $get_ville=$this->get('get_ville');
 
         // Vérifications pour le rayon
         if (isset($rayon) && (!isset($adresse) || empty($adresse))){
@@ -52,7 +53,7 @@ class Evenements extends REST_Controller
         }
 
         // Traitement de la requête
-        $events = $this->evenements->lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles);
+        $events = $this->evenements->lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles, $get_ville);
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',

@@ -9,13 +9,15 @@
 class Evenement_model extends CI_Model
 {
 
-    public function lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles){
+    public function lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles, $get_ville){
 
         $this->db->select('evenements.*');
         $this->db->from('evenements');
         $this->db->where('evenements.est_actif', true);
 
         $this->db->join('groupes', 'groupes.id_groupes = evenements.id_groupes');
+        $this->db->join('adresses', 'adresses.id_adresses = evenements.id_adresses');
+        $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
 
         // Filtrage sur le groupe
         if(isset($id_groupes)){
@@ -35,11 +37,9 @@ class Evenement_model extends CI_Model
             }
         }
 
+
         // Filtrage sur le rayon
         if(isset($rayon)){
-
-            $this->db->join('adresses', 'adresses.id_adresses = evenements.id_adresses');
-            $this->db->join('villes', 'villes.id_villes = adresses.id_villes');
 
             $distance = 'GetDistance(' . $this->db->escape($lat) . ', ' . $this->db->escape($lon) . ', villes.lat, villes.lon)';
 
@@ -58,6 +58,11 @@ class Evenement_model extends CI_Model
         // Limiter la quantité d'éléments
         if(isset($qte)){
             $this->db->limit($qte);
+        }
+
+        if(isset($get_ville) && $get_ville == 1 ){
+            // Sélection de la distance en plus
+            $this->db->select('villes.id_villes');
         }
 
         //die($this->db->get_compiled_select());
