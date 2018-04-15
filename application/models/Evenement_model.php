@@ -66,7 +66,7 @@ class Evenement_model extends CI_Model
         }
 
         // Tri par Date et heure d'évènement
-        $this->db->order('evenement.date_heure');
+        $this->db->order_by('evenement.date_heure', 'ASC');
 
         //die($this->db->get_compiled_select());
         $query = $this->db->get();
