@@ -111,6 +111,7 @@ $route['api/evenements'] = 'api/evenements';
 
 // Versions
 $route['api/versions'] = 'api/versions';
+$route['api/versions/updates'] = 'api/versions/updates';
 
 
 // Localisation
