@@ -9,7 +9,7 @@
 class Evenement_model extends CI_Model
 {
 
-    public function lister($id_groupes, $date_debut, $date_fin, $qte, $lat, $lon, $rayon, $styles, $get_ville){
+    public function lister($id_groupes, $date_debut, $date_fin, $qte, $lat = null, $lon = null, $rayon = null, $styles = null, $get_ville = false){
 
         $this->db->select('evenements.*');
         $this->db->from('evenements');
@@ -21,7 +21,7 @@ class Evenement_model extends CI_Model
 
         // Filtrage sur le groupe
         if(isset($id_groupes)){
-            $this->db->where('id_groupes', $id_groupes);
+            $this->db->where('evenements.id_groupes', $id_groupes);
         }
 
         // Filtrage sur les dates

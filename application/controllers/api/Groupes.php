@@ -291,15 +291,10 @@ class Groupes extends REST_Controller
             $date_debut = $this->get('date_debut');
             $date_fin = $this->get('date_fin');
             $qte = $this->get('qte');
-            $detail = $this->get('detail');
 
-            // Vérification des paramètres
-            if(!isset($detail)){
-                $detail = false;
-            }
 
             // Traitement de la requête
-            $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte, $detail);
+            $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte);
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
