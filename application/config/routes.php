@@ -118,5 +118,10 @@ $route['api/versions/updates'] = 'api/versions/updates';
 $route['api/localisations'] = "api/localisations";
 
 
+// Images
+$route['api/images/no_image.png'] = 'api/images/noimage';
+$route['api/images/(:any)/(:any)'] = 'api/images/$1/$2';
+
+
 // Tout refuser par défaut
 $route['(.*)'] = "api/apierror";
