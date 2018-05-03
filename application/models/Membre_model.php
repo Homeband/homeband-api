@@ -17,7 +17,7 @@ class Membre_model extends CI_Model
      * @return mixed
      */
     public function lister($date_debut, $date_fin, $qte, $id_groupe){
-        $this->db->from('membres_groupes');
+        $this->db->from('membres');
         $this->db->where('est_actif' ,true);
         if(isset($id_groupe)){
             $this->db->where('id_groupes' ,$id_groupe);
@@ -44,7 +44,7 @@ class Membre_model extends CI_Model
      * @return int
      */
     public function ajouter($membre){
-       if ($this->db->insert('membres_groupes', $membre)){
+       if ($this->db->insert('membres', $membre)){
            return $this->db->insert_id();
        } else {
            return 0;
@@ -58,7 +58,7 @@ class Membre_model extends CI_Model
      * @return mixed
      */
     public function recuperer($id, $id_groupe=0){
-        $this->db->from('membres_groupes');
+        $this->db->from('membres');
         $this->db->where('est_actif', true);
         $this->db->where('id_membres', $id);
 
@@ -79,7 +79,7 @@ class Membre_model extends CI_Model
      */
     public function modifier($membre){
         $this->db->where('id_membres' ,$membre->id_membres);
-        return $this->db->update('membres_groupes', $membre);
+        return $this->db->update('membres', $membre);
     }
 
     /**
@@ -89,7 +89,7 @@ class Membre_model extends CI_Model
      */
     public function supprimer($id_membres){
         // Préparation de la requête
-        $this->db->from('membres_groupes');
+        $this->db->from('membres');
 
         // Modification du statut est_actif à false
         $this->db->set('est_actif', false);

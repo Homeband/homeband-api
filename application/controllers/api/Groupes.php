@@ -125,14 +125,31 @@ class Groupes extends REST_Controller
      * @param $id_groupe
      */
     public function detail_get($id_groupe){
+
+        $getMembers = $this->get('membres');
+
+        if(!isset($getMembers) || intval($getMembers) != 1){
+            $getMembers = false;
+        } else {
+            $getMembers = true;
+        }
+
         $groupe = $this->groupes->recuperer($id_groupe);
 
         if(isset($groupe)){
+
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
-                'group' => $groupe
+                'group' => $groupe,
             );
+
+
+            if($getMembers){
+                $membres = $this->membres->lister(null, null, null, $id_groupe);
+                $results['members'] = $membres;
+            }
+
             $this->response($results, REST_Controller::HTTP_OK);
         } else {
 
