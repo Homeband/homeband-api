@@ -49,7 +49,7 @@ class Evenement_model extends CI_Model
         }
 
         // Filtrage sur le style de musique
-        if(isset($styles)){
+        if(isset($styles) && intval($styles) > 0){
 
             $this->db->join('styles', 'styles.id_styles = groupes.id_styles');
             $this->db->where('styles.id_styles' ,$styles);
