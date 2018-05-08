@@ -18,6 +18,7 @@ class Evenements extends REST_Controller
         $this->load->model('avis_model', 'avis');
         $this->load->model('annonce_model', 'annonces');
         $this->load->model('utilisateur_model', 'utilisateurs');
+        $this->load->model('adresse_model', 'adresses');
         $this->load->library("Geocoding");
     }
 
@@ -62,4 +63,26 @@ class Evenements extends REST_Controller
 
         $this->response($results, REST_Controller::HTTP_OK);
     }
+
+    public function detail_get($id_evenement){
+
+
+        // Traitement de la requête
+        $event = $this->evenements->recuperer($id_evenement);
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+            'event' => $event
+        );
+
+        if(isset($event)){
+            $adresse = $this->adresses->recuperer($event->id_adresses);
+            $results["address"]=$adresse;
+        }
+
+
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
+
+
 }

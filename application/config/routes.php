@@ -107,6 +107,7 @@ $route['api/styles'] = 'api/styles';
 
 // Evènements
 $route['api/evenements'] = 'api/evenements';
+$route['api/evenements/(:num)'] = 'api/evenements/detail/$1';
 
 
 // Versions

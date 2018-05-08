@@ -104,16 +104,6 @@ class Evenement_model extends CI_Model
         return $query->row(0, 'Evenement');
     }
 
-    public function recuperer_detail($id_event){
-        $this->db->from('details_evenements');
-        $this->db->where('id_evenements', $id_event);
-        $this->db->where('est_actif', true);
-
-        $query = $this->db->get();
-
-        return $query->result('Detail_Evenement');
-    }
-
     public function modifier($event, $id_evenements, $id_groupes = 0){
         $this->db->where('id_evenements', $id_evenements);
 
