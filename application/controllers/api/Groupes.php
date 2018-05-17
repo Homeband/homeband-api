@@ -16,6 +16,7 @@ class Groupes extends REST_Controller
         $this->load->model('evenement_model', 'evenements');
         $this->load->model('album_model', 'albums');
         $this->load->model('avis_model', 'avis');
+        $this->load->model('titre_model', 'titre');
         $this->load->model('annonce_model', 'annonces');
         $this->load->model('utilisateur_model', 'utilisateurs');
         $this->load->library("Geocoding");
@@ -463,12 +464,14 @@ class Groupes extends REST_Controller
     public function album_detail_get($id_groupe, $id_albums)
     {
         $album = $this->albums->recuperer($id_albums, $id_groupe);
+        $titre = $this->titre->lister($id_albums);
 
         if (isset($album)) {
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
-                'album' => $album
+                'album' => $album,
+                'titres' => $titre
             );
 
             $this->response($results, REST_Controller::HTTP_OK);
@@ -476,7 +479,8 @@ class Groupes extends REST_Controller
             $results = array(
                 'status' => true,
                 'message' => 'Aucun album correspondant à l\'ID '.$id_albums.' pour ce groupe.',
-                'album' => null
+                'album' => null,
+                'titres' => null
             );
 
             $this->response($results, REST_Controller::HTTP_OK);
