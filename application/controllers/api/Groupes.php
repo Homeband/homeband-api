@@ -464,7 +464,7 @@ class Groupes extends REST_Controller
     public function album_detail_get($id_groupe, $id_albums)
     {
         $album = $this->albums->recuperer($id_albums, $id_groupe);
-        $titre = $this->titre->lister($id_albums);
+        $titre = $this->titre->lister($id_albums,$id_groupe);
 
         if (isset($album)) {
             $results = array(

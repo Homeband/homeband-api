@@ -251,7 +251,7 @@ class Utilisateurs extends REST_Controller
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
-               
+
 
             );
 
