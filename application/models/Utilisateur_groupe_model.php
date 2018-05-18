@@ -41,18 +41,18 @@ class Utilisateur_groupe_model extends CI_Model
         );
         return ($this->db->insert('utilisateurs_groupes', $data));
     }
+
     public function recuperer($id_utilisateurs,$id_groupes){
-        $this->db->select('groupes.*');
+        $this->db->select('*');
         $this->db->from('utilisateurs_groupes');
         $this->db->where('id_utilisateurs', $id_utilisateurs);
-        $this->db->join('groupes', 'groupes.id_groupes = utilisateurs_groupes.id_groupes');
-        $this->db->where('groupes.id_groupes', $id_groupes);
-        $this->db->where('est_actif', true);
+        $this->db->where('id_groupes',$id_groupes);
 
         $query = $this->db->get();
 
-        return $query->row(0, 'Groupe');
+        return $query->row(0, 'UtilisateurGroupe');
     }
+
     public function supprimer($id_utilisateurs,$id_groupes){
         // Préparation de la requête
         $this->db->from('utilisateurs_groupes');
@@ -62,5 +62,7 @@ class Utilisateur_groupe_model extends CI_Model
 
         return $this->db->delete();
     }
+
+
 
 }

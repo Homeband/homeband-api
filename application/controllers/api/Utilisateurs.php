@@ -13,6 +13,10 @@ class Utilisateurs extends REST_Controller
         parent::__construct($config);
         $this->load->model('Utilisateur_model', 'utilisateur');
         $this->load->model('Utilisateur_groupe_model', 'utilisateur_groupe');
+        $this->load->model('groupe_model', 'groupes');
+        $this->load->model('membre_model', 'membres');
+        $this->load->model('album_model', 'albums');
+        $this->load->model('titre_model', 'titres');
     }
     //utilisateur
     public function index_get(){
@@ -232,5 +236,53 @@ class Utilisateurs extends REST_Controller
 
         $this->response($results, REST_Controller::HTTP_OK);
 
+    }
+
+    public function declare_connexion_groupe_post($id_utilisateur,$id_groupe){
+
+        $get_groupe = $this->post("get_groupe");
+        $get_membres = $this->post("get_membres");
+        $get_albums = $this->post("get_albums");
+        $get_titres = $this->post("get_titres");
+
+
+        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) == null){
+            $this->utilisateur_groupe->ajouter($id_utilisateur,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+               
+
+            );
+
+            if(isset($get_groupe) && intval($get_groupe) == 1){
+                $groupe = $this->groupes->recuperer($id_groupe);
+                $results["group"] = $groupe;
+            }
+
+            if(isset($get_membres) && intval($get_membres) == 1){
+                $membres = $this->membres->lister(null, null, null, $id_groupe);
+                $results["members"] = $membres;
+            }
+
+            if(isset($get_albums) && intval($get_albums) == 1){
+                $albums = $this->albums->lister($id_groupe,null, null, null );
+                $results["albums"] = $albums;
+            }
+
+            if(isset($get_titres) && intval($get_titres) == 1){
+                $titres = $this->albums->lister(null,$id_groupe);
+                $results["titles"] = $titres;
+            }
+
+            $this->response($results, REST_Controller::HTTP_OK);
+        } else {
+           $results = array(
+               'status' => false,
+               'message' => 'Erreur la liaison existe déjà !',
+           );
+
+           $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+       }
     }
 }
