@@ -267,7 +267,7 @@ class Utilisateurs extends REST_Controller
             }
 
             if(isset($get_albums) && intval($get_albums) == 1){
-                $albums = $this->albums->lister($id_groupe,null, null, null );
+                $albums = $this->albums->lister($id_groupe);
                 $results["albums"] = $albums;
             }
 
@@ -289,8 +289,8 @@ class Utilisateurs extends REST_Controller
 
     //Supprimer la liaison entre le groupe et l'utilisateur
     public function remove_connexion_groupe_delete($id_utilisateur,$id_groupe){
-
-        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) =! null){
+        $test = $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe);
+        if( $test =! null){
             $this->utilisateur_groupe->supprimer($id_utilisateur,$id_groupe);
             $results = array(
                 'status' => true,

@@ -9,7 +9,7 @@
 class Album_model extends CI_Model
 {
 
-    public function lister($id_groupes, $date_debut, $date_fin, $qte){
+    public function lister($id_groupes, $date_debut = null, $date_fin = null, $qte = null){
         $this->db->from('albums');
         $this->db->where('id_groupes', $id_groupes);
         $this->db->where('est_actif', true);
