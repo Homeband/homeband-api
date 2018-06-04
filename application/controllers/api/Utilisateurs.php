@@ -238,6 +238,7 @@ class Utilisateurs extends REST_Controller
 
     }
 
+    //Ajout de la liaison addFavourite groupe 
     public function declare_connexion_groupe_post($id_utilisateur,$id_groupe){
 
         $get_groupe = $this->post("get_groupe");
@@ -284,5 +285,26 @@ class Utilisateurs extends REST_Controller
 
            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
        }
+    }
+
+    //Supprimer la liaison entre le groupe et l'utilisateur
+    public function remove_connexion_groupe_delete($id_utilisateur,$id_groupe){
+
+        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) =! null){
+            $this->utilisateur_groupe->supprimer($id_utilisateur,$id_groupe);
+            $results = array(
+                'status' => true,
+                'message' => 'Opération réussie !',
+
+
+            );
+        } else {
+            $results = array(
+                'status' => false,
+                'message' => 'Erreur lors de la suppression !',
+            );
+ 
+            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 }
