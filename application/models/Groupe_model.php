@@ -168,4 +168,25 @@ class Groupe_model extends CI_Model
 
         return ($this->db->count_all_results() == 0);
     }
+
+    /**
+     * Récupère un groupe en fonction de son ID
+     * @param $id_groupe
+     * @return mixed
+     */
+    public function recupererExtraLight($id_groupe){
+        // Préparation de la requête
+        $this->db->select('id_groupes, nom, id_styles');
+        $this->db->from('groupes');
+        $this->db->where('id_groupes', $id_groupe);
+        $this->db->where('est_actif', true);
+
+        // Execution de la requête
+        $query = $this->db->get();
+
+        // Récupération et renvoi de la première ligne
+        $row = $query->row(0, 'Groupe');
+        return $row;
+    }
+
 }

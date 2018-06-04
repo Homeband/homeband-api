@@ -77,7 +77,10 @@ class Evenements extends REST_Controller
 
         if(isset($event)){
             $adresse = $this->adresses->recuperer($event->id_adresses);
-            $results["address"]=$adresse;
+            $results["address"] = $adresse;
+
+            $group = $this->groupes->recupererExtraLight($event->id_groupes);
+            $results["group"] = $group;
         }
 
 
