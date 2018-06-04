@@ -289,15 +289,16 @@ class Utilisateurs extends REST_Controller
 
     //Supprimer la liaison entre le groupe et l'utilisateur
     public function remove_connexion_groupe_delete($id_utilisateur,$id_groupe){
-        $test = $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe);
-        if( $test =! null){
+
+        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) != null){
             $this->utilisateur_groupe->supprimer($id_utilisateur,$id_groupe);
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
-
-
             );
+            
+            $this->response($results, REST_Controller::HTTP_OK);
+
         } else {
             $results = array(
                 'status' => false,
