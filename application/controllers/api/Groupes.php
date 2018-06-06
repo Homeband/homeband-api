@@ -312,7 +312,7 @@ class Groupes extends REST_Controller
 
 
             // Traitement de la requête
-            $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte);
+            $events = $this->evenements->lister($id_groupe, $date_debut, $date_fin, $qte, null, null, null, null, true);
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
