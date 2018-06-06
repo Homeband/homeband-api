@@ -528,7 +528,7 @@ class Groupes extends REST_Controller
         $qte = $this->get('qte');
         $type = $this->get('type');
 
-        $comments = $this->avis->lister($id_groupe,0, $date_debut, $date_fin, $qte);
+        $comments = $this->avis->lister($id_groupe,0, $date_debut, $date_fin, $qte, $type);
         foreach($comments as $comment){
             $user = $this->utilisateurs->recuperer($comment->id_utilisateurs);
             $comment->username = isset($user) ? $user->login : "Inconnu";
