@@ -8,7 +8,7 @@
 
 class Avis_model extends CI_Model
 {
-    public function lister($id_groupes,$id_utilisateurs, $date_debut, $date_fin, $qte){
+    public function lister($id_groupes,$id_utilisateurs, $date_debut, $date_fin, $qte, $type = null){
         $this->db->from('avis');
         $this->db->where('est_actif', true);
 
@@ -28,6 +28,24 @@ class Avis_model extends CI_Model
         if(isset($date_fin)){
             $this->db->where('date_heure <=', $date_fin);
         }
+
+        if(isset($type)){
+            switch(intval($type)){
+                case 1:
+                    $this->db->where('est_verifie', true);
+                    $this->db->where('est_valide', true);
+                    break;
+                case 2:
+                    $this->db->where('est_verifie', true);
+                    $this->db->where('est_valide', false);
+                    break;
+                case 3:
+                    $this->db->where('est_verifie', false);
+                    break;
+            }
+        }
+
+        $this->db->order_by("date_ajout DESC");
 
         if(isset($qte)){
             $this->db->limit($qte);

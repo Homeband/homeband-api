@@ -526,8 +526,7 @@ class Groupes extends REST_Controller
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
-        //$valides = isset($this->get('valides')) ? (bool)$this->get('valides') : false;
-        //$attente = $this->get('attente');
+        $type = $this->get('type');
 
         $comments = $this->avis->lister($id_groupe,0, $date_debut, $date_fin, $qte);
         foreach($comments as $comment){
