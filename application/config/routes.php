@@ -103,6 +103,10 @@ $route['api/utilisateurs/(:num)/avis'] = 'api/utilisateurs/U_avis/$1';
 $route['api/utilisateurs/(:num)/avis/(:num)'] = 'api/utilisateurs/U_avis/$1/$2';
 
 
+// Albums
+$route['api/albums/(:num)/titres'] = 'api/albums/titre/$1';
+
+
 // Styles
 $route['api/styles'] = 'api/styles';
 
@@ -115,6 +119,8 @@ $route['api/evenements/(:num)'] = 'api/evenements/detail/$1';
 // Versions
 $route['api/versions'] = 'api/versions';
 $route['api/versions/updates'] = 'api/versions/updates';
+
+
 
 
 // Localisation

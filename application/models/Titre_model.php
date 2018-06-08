@@ -17,4 +17,24 @@ class Titre_model extends CI_Model
 
         return $query->result('Titre');
     }
+
+    public function ajouter($titre){
+        return $this->db->insert('titres', $titre);
+    }
+
+    public function modifier($titre){
+        // Préparation de la requête
+        $this->db->where('id_titres' ,$titre->id_titres);
+
+        foreach(get_object_vars($groupe) as $att => $val){
+            $this->db->set($att, $val);
+        }
+
+        // Modification de la fiche
+        return $this->db->update('titres');
+    }
+
+    public function supprimer($titre){
+
+    }
 }
