@@ -20,7 +20,7 @@ class Sessions extends REST_Controller
 
         $login = $this->post("login");
         $password = $this->post('mot_de_passe');
-        $type = $this->post('type');
+        $type = (int)$this->post('type');
 
         if(!isset($login) || !isset($password) || !isset($type)){
             $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
@@ -29,6 +29,7 @@ class Sessions extends REST_Controller
         switch($type){
             case 1:
                 $this->_connexion_utilisateur($login, $password);
+                //$this->response(, REST_Controller::HTTP_BAD_REQUEST);
                 break;
             case 2:
                 $this->_connexion_groupe($login, $password);
@@ -45,7 +46,12 @@ class Sessions extends REST_Controller
             if (isset($login) && isset($password)) {
 
                 $utilisateur = $this->utilisateurs->connecter($login, $password);
-
+                /*$array = array(
+                    'message' => "OK",
+                    'status' => false,
+                    'data' => "test_".$login
+                );*/
+                //return $array;
                 if (isset($utilisateur)) {
 
                     $results = array(
@@ -59,10 +65,10 @@ class Sessions extends REST_Controller
                     $results = array(
                         'status' => false,
                         'message' => 'Identifiant ou mot de passe incorrect',
-                        'group' => NULL
+                        'user' => NULL
                     );
 
-                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+                    $this->response($results, REST_Controller::HTTP_OK);
                 }
             } else {
                 $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
