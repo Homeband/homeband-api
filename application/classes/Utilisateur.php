@@ -6,8 +6,6 @@ class Utilisateur extends MY_Object
     public $email = '';
     public $login = '';
     public $mot_de_passe = '';
-    public $nom = '';
-    public $prenom = '';
     public $est_actif = true;
     public $api_ck = '';
 

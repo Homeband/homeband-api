@@ -98,9 +98,10 @@ $route['api/utilisateurs/(:num)/groupes'] = 'api/utilisateurs/U_groupes/$1';
 $route['api/utilisateurs/(:num)/groupes/(:num)']["POST"] = 'api/utilisateurs/declare_connexion_groupe/$1/$2';
 $route['api/utilisateurs/(:num)/groupes/(:num)']["DELETE"] = 'api/utilisateurs/remove_connexion_groupe/$1/$2';
 
-
 $route['api/utilisateurs/(:num)/avis'] = 'api/utilisateurs/U_avis/$1';
 $route['api/utilisateurs/(:num)/avis/(:num)'] = 'api/utilisateurs/U_avis/$1/$2';
+
+$route['api/utilisateurs/forgetpwd'] = 'api/utilisateurs/forget_password';
 
 
 // Albums

@@ -64,7 +64,6 @@ class Versions extends REST_Controller
     public function updates_post(){
         $versions = $this->post('versions');
         $versions_retour = array();
-
         if(isset($versions) && is_array($versions) && !empty($versions)){
             foreach($versions as $version_param){
                 $version = new Version($version_param);

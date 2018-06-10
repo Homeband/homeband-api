@@ -131,6 +131,33 @@ class Utilisateurs extends REST_Controller
 
     }
 
+    public function forget_password(){
+        $email = $this->input->post('email');
+
+        if(isset($email)){
+            $user = $this->utilisateur->recupererParEmail($email);
+            if($user != null){
+                $password = random_string('alnum', 12);
+                $user->mot_de_passe = $password;
+                $user->hash_password();
+
+                $this->load->library('email');
+
+                $this->email->from('noreply@homeband-heh.be', 'Homeband');
+                $this->email->to($email);
+                $this->email->subject("Demande d'un nouveau de mot de passe");
+                $this->email->message("Votre nouveau mot de passe est: $password");
+
+                if($this->email->send()){
+                    $this->utilisateur->modifier($user);
+                }
+            }
+        } else {
+
+        }
+
+    }
+
     //Utilisateur/groupes
 
     public function U_groupes_get($id_utilisateurs){
@@ -296,7 +323,7 @@ class Utilisateurs extends REST_Controller
                 'status' => true,
                 'message' => 'Opération réussie !',
             );
-            
+
             $this->response($results, REST_Controller::HTTP_OK);
 
         } else {

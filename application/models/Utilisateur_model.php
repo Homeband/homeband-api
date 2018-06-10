@@ -45,6 +45,16 @@ class Utilisateur_model extends CI_Model
         return $query->row(0, 'Utilisateur');
     }
 
+    public function recupererParEmail($email){
+        $this->db->from('utilisateurs');
+        $this->db->where('email', $email);
+        $this->db->where('est_actif', true);
+
+        $query = $this->db->get();
+
+        return $query->row(0, 'Utilisateur');
+    }
+
     public function modifier($user, $id_utilisateurs){
         $this->db->where('id_utilisateurs', $id_utilisateurs);
 
