@@ -22,7 +22,7 @@ class Albums
     //album
     public function titres_post($id_albums){
         $titre = new Titre($this->post('titre'));
-        $titre->id_albums = 0;
+        $titre->id_albums = $id_albums;
         $id = $this->titre->ajouter($titre);
 
         if($id > 0){
