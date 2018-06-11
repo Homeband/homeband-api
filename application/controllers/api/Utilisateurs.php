@@ -85,17 +85,16 @@ class Utilisateurs extends REST_Controller
         }
 
     public function detail_put($id_utilisateurs){
+
         $initialUser = $this->utilisateur->recuperer($id_utilisateurs);
         if($initialUser != null){
-        
             $user = new Utilisateur($this->put('user'));
-            if($user->mot_de_passe != $initialUser->mot_de_passe){
+            if($user->mot_de_passe != "" && $user->mot_de_passe != $initialUser->mot_de_passe){
                 $user->hash_password();    
             }
 
             $user->id_utilisateurs = $id_utilisateurs;
-            
-            //$user = arrayToObject($user);
+
             if ($this->utilisateur->modifier($user,$id_utilisateurs)){
                 $user = $this->utilisateur->recuperer($id_utilisateurs);
 
@@ -131,10 +130,11 @@ class Utilisateurs extends REST_Controller
 
     }
 
-    public function forget_password(){
+    public function forget_password_post(){
         $email = $this->input->post('email');
 
         if(isset($email)){
+            $email = strtolower($email);
             $user = $this->utilisateur->recupererParEmail($email);
             if($user != null){
                 $password = random_string('alnum', 12);
@@ -143,19 +143,37 @@ class Utilisateurs extends REST_Controller
 
                 $this->load->library('email');
 
-                $this->email->from('noreply@homeband-heh.be', 'Homeband');
+                $this->email->from('no-reply@homeband-heh.be', 'Homeband');
                 $this->email->to($email);
                 $this->email->subject("Demande d'un nouveau de mot de passe");
                 $this->email->message("Votre nouveau mot de passe est: $password");
 
                 if($this->email->send()){
-                    $this->utilisateur->modifier($user);
+                    $this->utilisateur->modifier($user, $user->id_utilisateurs);
                 }
+
+                $result = array(
+                    "status" => true,
+                    "message" => "Opération réussie !"
+                );
+
+                $this->response($result, REST_Controller::HTTP_OK);
+            } else {
+                $result = array(
+                    "status" => false,
+                    "message" => "Aucun utilisateur ne correspond à l'adresse email renseignée."
+                );
+
+                $this->response($result, REST_Controller::HTTP_BAD_REQUEST);
             }
         } else {
+            $result = array(
+                "status" => false,
+                "message" => "L'adresse email de l'utilisateur est obligatoire."
+            );
 
+            $this->response($result, REST_Controller::HTTP_BAD_REQUEST);
         }
-
     }
 
     //Utilisateur/groupes
@@ -274,8 +292,9 @@ class Utilisateurs extends REST_Controller
         $get_titres = $this->post("get_titres");
 
 
-        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) == null){
-            $this->utilisateur_groupe->ajouter($id_utilisateur,$id_groupe);
+        if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) == null) {
+            $this->utilisateur_groupe->ajouter($id_utilisateur, $id_groupe);
+        }
             $results = array(
                 'status' => true,
                 'message' => 'Opération réussie !',
@@ -304,14 +323,6 @@ class Utilisateurs extends REST_Controller
             }
 
             $this->response($results, REST_Controller::HTTP_OK);
-        } else {
-           $results = array(
-               'status' => false,
-               'message' => 'Erreur la liaison existe déjà !',
-           );
-
-           $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-       }
     }
 
     //Supprimer la liaison entre le groupe et l'utilisateur
@@ -319,20 +330,13 @@ class Utilisateurs extends REST_Controller
 
         if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) != null){
             $this->utilisateur_groupe->supprimer($id_utilisateur,$id_groupe);
-            $results = array(
-                'status' => true,
-                'message' => 'Opération réussie !',
-            );
-
-            $this->response($results, REST_Controller::HTTP_OK);
-
-        } else {
-            $results = array(
-                'status' => false,
-                'message' => 'Erreur lors de la suppression !',
-            );
- 
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
+
+        $results = array(
+            'status' => true,
+            'message' => 'Opération réussie !',
+        );
+
+        $this->response($results, REST_Controller::HTTP_OK);
     }
 }

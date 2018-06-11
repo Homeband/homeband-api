@@ -33,14 +33,14 @@ class Avis_model extends CI_Model
             switch(intval($type)){
                 case 1:
                     $this->db->where('est_verifie', true);
-                    $this->db->where('est_valide', true);
+                    $this->db->where('est_accepte', true);
                     break;
                 case 2:
                     $this->db->where('est_verifie', true);
-                    $this->db->where('est_valide', false);
+                    $this->db->where('est_accepte', false);
                     break;
                 case 3:
-                    $this->db->where('est_verifie', false);
+                    $this->db->where('est_accepte', false);
                     break;
             }
         }

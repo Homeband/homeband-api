@@ -28,6 +28,7 @@ class Utilisateur_model extends CI_Model
     }
 
     public function ajouter($user){
+        $user->est_actif = true;
         if($this->db->insert('utilisateurs', $user)){
             return $this->db->insert_id();
         } else {
@@ -56,9 +57,17 @@ class Utilisateur_model extends CI_Model
     }
 
     public function modifier($user, $id_utilisateurs){
-        $this->db->where('id_utilisateurs', $id_utilisateurs);
 
-        return $this->db->update('utilisateurs', $user);
+        // Préparation de la requête
+        $this->db->where('id_utilisateurs' ,$id_utilisateurs);
+        foreach(get_object_vars($user) as $att => $val){
+            if(($att != 'api_ck' && $att != 'mot_de_passe' && $att != 'id_utilisateurs') || ($att == 'mot_de_passe' && !empty($val))){
+                $this->db->set($att, $val);
+            }
+        }
+
+        // Modification de la fiche
+        return $this->db->update('utilisateurs');
     }
 
     public function supprimer($id_utilisateurs){

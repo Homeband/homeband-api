@@ -91,6 +91,9 @@ $route['api/groupes/(:num)/annonces/(:num)'] = 'api/groupes/annonce_detail/$1/$2
 
 
 //Utilisateurs
+
+$route['api/utilisateurs/forget'] = 'api/utilisateurs/forget_password';
+
 $route['api/utilisateurs'] = 'api/utilisateurs';
 $route['api/utilisateurs/(:num)'] = 'api/utilisateurs/detail/$1';
 
@@ -101,7 +104,6 @@ $route['api/utilisateurs/(:num)/groupes/(:num)']["DELETE"] = 'api/utilisateurs/r
 $route['api/utilisateurs/(:num)/avis'] = 'api/utilisateurs/U_avis/$1';
 $route['api/utilisateurs/(:num)/avis/(:num)'] = 'api/utilisateurs/U_avis/$1/$2';
 
-$route['api/utilisateurs/forgetpwd'] = 'api/utilisateurs/forget_password';
 
 
 // Albums
@@ -120,8 +122,6 @@ $route['api/evenements/(:num)'] = 'api/evenements/detail/$1';
 // Versions
 $route['api/versions'] = 'api/versions';
 $route['api/versions/updates'] = 'api/versions/updates';
-
-
 
 
 // Localisation
