@@ -11,20 +11,28 @@ class Utilisateurs extends REST_Controller
     public function __construct($config = 'rest')
     {
         parent::__construct($config);
-        $this->load->model('Utilisateur_model', 'utilisateur');
-        $this->load->model('Utilisateur_groupe_model', 'utilisateur_groupe');
+        $this->load->model('utilisateur_model', 'utilisateur');
         $this->load->model('groupe_model', 'groupes');
         $this->load->model('membre_model', 'membres');
         $this->load->model('album_model', 'albums');
         $this->load->model('titre_model', 'titres');
     }
-    //utilisateur
+
+    /**
+     * Liste des utilisateurs correspondants à des critères spécifiques
+     * -- Fonction réservée à l'administration --
+     */
     public function index_get(){
+        // TODO : Signature API
+
+        // Paramètres
         $cp = $this->get('code_postal');
         $rayon = $this->get('rayon');
 
-        $users = $this->utilisateur->lister($cp, $rayon);
+        // Recherche des utilisateurs correspondants
+        $users = $this->utilisateurs->lister($cp, $rayon);
 
+        // Retour du résultat
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',
@@ -34,12 +42,23 @@ class Utilisateurs extends REST_Controller
         $this->response($results, REST_Controller::HTTP_OK);
     }
 
+    /**
+     * Inscription d'un utilisateur
+     */
     public function index_post(){
+        // TODO : Signature API
+
+        // Création d'un objet utilisateur avec les données envoyées
         $user = new Utilisateur($this->post('user'));
+
+        // Hachage du mot de passe
         $user->hash_password();
+
+        // Remise à 0 de lidentifiant unique (géré par la base de données)
         $user->id_utilisateurs = 0;
 
-        if(!$this->utilisateur->verifie_login($user->login)){
+        // Vérification de la disponibilité du login
+        if(!$this->utilisateurs->verifie_login($user->login)){
             $results = array(
                 'status' => false,
                 'message' => 'Le login n\'est pas disponible.'
@@ -48,7 +67,8 @@ class Utilisateurs extends REST_Controller
             $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if(!$this->utilisateur->verifie_email($user->email)){
+        // Vérification de la disponibilité de l'email
+        if(!$this->utilisateurs->verifie_email($user->email)){
             $results = array(
                 'status' => false,
                 'message' => 'L\'adresse email est déjà utilisée.'
@@ -57,10 +77,13 @@ class Utilisateurs extends REST_Controller
             $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $id = $this->utilisateur->ajouter($user);
+        // Création de l'utilisateur
+        $id = $this->utilisateurs->ajouter($user);
 
+        // Retour du résultat
         if($id > 0){
-            $user = $this->utilisateur->recuperer($id);
+            // Récupération de l'utilisateur
+            $user = $this->utilisateurs->recuperer($id);
 
             $results = array(
                 'status' => true,
@@ -80,8 +103,13 @@ class Utilisateurs extends REST_Controller
         }
     }
 
+    /**
+     * Fiche d'un utilisateur
+     * @param $id_utilisateurs Identifiant de l'utilisateur
+     */
     public function detail_get($id_utilisateurs){
-        $user = $this->utilisateur->recuperer($id_utilisateurs);
+        // TODO : Signature API
+        $user = $this->utilisateurs->recuperer($id_utilisateurs);
 
         if (isset($user)) {
             $results = array(
@@ -100,12 +128,17 @@ class Utilisateurs extends REST_Controller
 
             $this->response($results, REST_Controller::HTTP_OK);
         }
+    }
 
-        }
-
+    /**
+     * Modification d'un utilisateur
+     * @param $id_utilisateurs Identifiant de l'utilisateur
+     */
     public function detail_put($id_utilisateurs){
-
-        $initialUser = $this->utilisateur->recuperer($id_utilisateurs);
+        // TODO : Signature API
+        // TODO : Commentaires
+        // TODO : Nomenclature
+        $initialUser = $this->utilisateurs->recuperer($id_utilisateurs);
         if($initialUser != null){
             $user = new Utilisateur($this->put('user'));
             if($user->mot_de_passe != "" && $user->mot_de_passe != $initialUser->mot_de_passe){
@@ -114,8 +147,8 @@ class Utilisateurs extends REST_Controller
 
             $user->id_utilisateurs = $id_utilisateurs;
 
-            if ($this->utilisateur->modifier($user,$id_utilisateurs)){
-                $user = $this->utilisateur->recuperer($id_utilisateurs);
+            if ($this->utilisateurs->modifier($user,$id_utilisateurs)){
+                $user = $this->utilisateurs->recuperer($id_utilisateurs);
 
                 $results = array(
                     'status' => true,
@@ -138,28 +171,29 @@ class Utilisateurs extends REST_Controller
 
     }
 
-    public function detail_delete($id_utilisateurs){
-        $this->utilisateur->supprimer($id_utilisateurs);
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-        );
-
-        $this->response($results, REST_Controller::HTTP_OK);
-
-    }
-
+    /**
+     * Demande d'un nouveau mot de passe
+     */
     public function forget_password_post(){
+        // TODO : Signature API
+
+        // Paramètres d'appel
         $email = $this->input->post('email');
 
         if(isset($email)){
+            // transformation de l'email en minuscules
             $email = strtolower($email);
-            $user = $this->utilisateur->recupererParEmail($email);
+
+            // Recherche d'un utilisateur correspondant
+            $user = $this->utilisateurs->recuperer_par_email($email);
             if($user != null){
+
+                // Génération d'un nouveau mot de passe
                 $password = random_string('alnum', 12);
                 $user->mot_de_passe = $password;
                 $user->hash_password();
 
+                // Création de l'email pour informer l'utilisateur
                 $this->load->library('email');
 
                 $this->email->from('no-reply@homeband-heh.be', 'Homeband');
@@ -168,13 +202,21 @@ class Utilisateurs extends REST_Controller
                 $this->email->message("Votre nouveau mot de passe est: $password");
 
                 if($this->email->send()){
-                    $this->utilisateur->modifier($user, $user->id_utilisateurs);
-                }
+                    // Si l'envoi d'email réussi, on met à jour le mot de passe dans la base de données
+                    $this->utilisateurs->modifier($user, $user->id_utilisateurs);
 
-                $result = array(
-                    "status" => true,
-                    "message" => "Opération réussie !"
-                );
+                    // Retour
+                    $result = array(
+                        "status" => true,
+                        "message" => "Opération réussie !"
+                    );
+                } else {
+                    // Retour
+                    $result = array(
+                        "status" => false,
+                        "message" => "Une erreur interne s'est produite, veuillez réessayer plus tard."
+                    );
+                }
 
                 $this->response($result, REST_Controller::HTTP_OK);
             } else {

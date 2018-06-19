@@ -126,7 +126,7 @@ class Groupes extends REST_Controller
 
     /**
      * Récupère la fiche d'un groupe
-     * @param $id_groupe
+     * @param $id_groupe Identifiant du groupe
      */
     public function detail_get($id_groupe){
 
@@ -168,7 +168,7 @@ class Groupes extends REST_Controller
 
     /**
      * Modifie la fiche d'un groupe
-     * @param $id_groupe
+     * @param $id_groupe Identifiant du groupe
      */
     public function detail_put($id_groupe){
         $id_check = 0;
@@ -206,7 +206,7 @@ class Groupes extends REST_Controller
 
     /**
      * Supprime la fiche d'un groupe
-     * @param $id_groupe
+     * @param $id_groupe Identifiant du groupe
      */
     public function detail_delete($id_groupe){
         $this->groupes->supprimer($id_groupe);

@@ -46,7 +46,7 @@ class Utilisateur_model extends CI_Model
         return $query->row(0, 'Utilisateur');
     }
 
-    public function recupererParEmail($email){
+    public function recuperer_par_email($email){
         $this->db->from('utilisateurs');
         $this->db->where('email', $email);
         $this->db->where('est_actif', true);
@@ -83,30 +83,31 @@ class Utilisateur_model extends CI_Model
 
     public function connecter($login, $mot_de_passe){
 
+        // Table
         $this->db->from('utilisateurs');
-        // requête de type where 'login' = 'Chris'
+
+        // Conditions
         $this->db->where('login', $login);
-        //$this->db->where('mot_de_passe', $this->mot_de_passe);
         $this->db->where('est_actif', TRUE);
-        // Select * from
+
+        // Execution de la requête
         $query = $this->db->get();
-        //selectionne la première ligne
-        $row = $query->row(0, 'Utilisateur');
 
-        // Si variable row = à quelque chose
-        if(isset($row) && $row->check_password($mot_de_passe)) {
-            // Connexion réussie
+        // Récupération du premier utilisateur
+        $user = $query->row(0, 'Utilisateur');
 
+        // Si l'utilisateur a été trouvé et que son mot de passe est correct
+        if(isset($user) && $user->check_password($mot_de_passe)) {
             // Génération du CK pour la session
             $ck = random_string('alnum', 48);
 
-            $this->_update_ck($row->id_utilisateurs, $ck);
+            $this->_update_ck($user->id_utilisateurs, $ck);
 
-            $row->api_ck = $ck;
-            $row->mot_de_passe = '';
+            $user->api_ck = $ck;
+            $user->mot_de_passe = '';
 
-            //Objet courant va comprendre tout ça donc $user dans controller Welcome sera = à ça
-            return $row;
+            // Renvoi de l'objet utilisateur correspondant
+            return $user;
 
         } else{
             // Echec de la connexion
@@ -123,14 +124,23 @@ class Utilisateur_model extends CI_Model
         return ($this->db->count_all_results() == 0);
     }
 
-
-
     public function verifie_email($email){
         $this->db->from('utilisateurs');
         $this->db->where('email', $email);
         $this->db->where('est_actif', true);
 
         return ($this->db->count_all_results() == 0);
+    }
+
+    public function getLightVersion($id_utilisateurs){
+        $this->db->select("id_utilisateurs, login, email, est_actif");
+        $this->db->from('utilisateurs');
+        $this->db->where('id_utilisateurs', $id_utilisateurs);
+        $this->db->where('est_actif', true);
+
+        $query = $this->db->get();
+
+        return $query->row(0, 'Utilisateur');
     }
 
     private function _update_ck($id_utilisateurs, $ck){
