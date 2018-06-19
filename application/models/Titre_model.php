@@ -18,8 +18,22 @@ class Titre_model extends CI_Model
         return $query->result('Titre');
     }
 
+    public function recuperer($id){
+        $this->db->from("titres");
+        $this->db->where("id_titres", $id);
+        $this->db->where("est_actif", true);
+
+        return $this->db->get()->row(0, "Titre");
+    }
+
     public function ajouter($titre){
-        return $this->db->insert('titres', $titre);
+        $titre->est_actif = true;
+        $titre->id_titres = 0;
+        if($this->db->insert('titres', $titre)){
+            return $this->db->insert_id();
+        } else {
+            return 0;
+        }
     }
 
     public function modifier($titre){

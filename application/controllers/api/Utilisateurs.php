@@ -38,6 +38,25 @@ class Utilisateurs extends REST_Controller
         $user = new Utilisateur($this->post('user'));
         $user->hash_password();
         $user->id_utilisateurs = 0;
+
+        if(!$this->utilisateur->verifie_login($user->login)){
+            $results = array(
+                'status' => false,
+                'message' => 'Le login n\'est pas disponible.'
+            );
+
+            $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if(!$this->utilisateur->verifie_email($user->email)){
+            $results = array(
+                'status' => false,
+                'message' => 'L\'adresse email est déjà utilisée.'
+            );
+
+            $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $id = $this->utilisateur->ajouter($user);
 
         if($id > 0){

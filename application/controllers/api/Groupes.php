@@ -40,22 +40,25 @@ class Groupes extends REST_Controller
         $styles = $this->get('styles');
 
         // Vérifications pour le rayon
-        if (isset($rayon) && (!isset($adresse) || empty($adresse))){
+        /*if (isset($rayon) && (!isset($adresse) || empty($adresse))){
             // Création et envoi de la réponse
             $results = array(
                 'status' => false,
                 'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }
+        }*/
+
+        if(isset($rayon) && $rayon == 0)
+            $rayon = null;
 
         if(isset($adresse) && !empty($adresse)){
             $coord = $this->geocoding->getCoordFromAddress($adresse.' Belgium');
             $lat = $coord['lat'];
             $lon = $coord['lon'];
         } else {
-            $lat = 0.0;
-            $lon = 0.0;
+            $lat = null;
+            $lon = null;
         }
 
         // Récupération de la liste des groupes correspondants aux critères
@@ -301,6 +304,15 @@ class Groupes extends REST_Controller
     }
 
 
+    public function detail_membre_options($id_groupe,$id_membres){
+        $results = array(
+            'status' => true,
+            'message' => 'Operation reussie !',
+        );
+        $this->response($results, REST_Controller::HTTP_OK);
+    }
+
+
 
 
     // Evenements
@@ -441,6 +453,7 @@ class Groupes extends REST_Controller
         $album = new Album($this->post('album'));
         $album->id_groupes = $id_groupe;
         $album->id_albums = 0;
+
         $id = $this->albums->ajouter($album);
 
         if($id > 0){
@@ -488,14 +501,16 @@ class Groupes extends REST_Controller
     }
 
     public function album_detail_put($id_groupe, $id_albums){
-        $album = $this->put('album');
-        $album = arrayToObject($album);
+        $album_param = $this->put('album');
+        $album = new Album($album_param);
+
         if ($this->albums->modifier($album, $id_albums, $id_groupe)){
-            $album = $this->albums->recuperer($id_albums,$id_groupe);
+
+            $album_new = $this->albums->recuperer($id_albums,$id_groupe);
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
-                'album' => $album
+                'album' => $album_new
             );
             $this->response($results, REST_Controller::HTTP_OK);
         }
@@ -608,6 +623,55 @@ class Groupes extends REST_Controller
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
         }
+    }
+
+    public function avis_status_put($id_groupe, $id_avis){
+        $status = $this->put('status');
+        if(isset($status)){
+            $avis = $this->avis->recuperer($id_avis, $id_groupe);
+            if($avis != null){
+                if(boolval($status)){
+                    $avis->est_verifie = true;
+                    $avis->est_accepte = true;
+                } else {
+                    $avis->est_verifie = true;
+                    $avis->est_accepte = false;
+                }
+
+                if($this->avis->modifier($avis, $id_avis, $id_groupe)){
+                    $result = array(
+                        'status' => true,
+                        'message' => "Opération réussie !",
+                        'comment' => $this->avis->recuperer($id_avis, $id_groupe)
+                    );
+
+                    $this->response($result, self::HTTP_OK);
+                } else {
+                    $result = array(
+                        'status' => false,
+                        'message' => "Erreur lors de la modification !",
+                        'comment' => $this->avis->recuperer($id_avis, $id_groupe)
+                    );
+
+                    $this->response($result, self::HTTP_OK);
+                }
+            } else {
+                $result = array(
+                    'status' => false,
+                    'message' => "L'avis n'a pas été trouvé dans la base de données"
+                );
+
+                $this->response($result, self::HTTP_OK);
+            }
+        } else {
+            $result = array(
+                'status' => false,
+                'message' => "Le statut de l'avis doit être passé en paramètre."
+            );
+
+            $this->response($result, self::HTTP_OK);
+        }
+
     }
 
     public function avis_detail_delete($id_groupe, $id_avis){

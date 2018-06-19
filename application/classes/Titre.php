@@ -7,4 +7,5 @@ class Titre extends MY_Object
     public $est_actif = true;
     public $id_albums = 0;
     public $id_groupes = 0;
+    public $titre = '';
 }

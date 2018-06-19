@@ -21,7 +21,7 @@ class Membre_model extends CI_Model
         $this->db->where('est_actif' ,true);
         if(isset($id_groupe)){
             $this->db->where('id_groupes' ,$id_groupe);
-    }
+        }
 
         if(isset($date_debut)){
             $this->db->where('date_debut <=' ,$date_debut);
@@ -44,11 +44,12 @@ class Membre_model extends CI_Model
      * @return int
      */
     public function ajouter($membre){
-       if ($this->db->insert('membres', $membre)){
-           return $this->db->insert_id();
-       } else {
-           return 0;
-       }
+        $membre->est_actif = true;
+        if ($this->db->insert('membres', $membre)){
+            return $this->db->insert_id();
+        } else {
+            return 0;
+        }
     }
 
     /**

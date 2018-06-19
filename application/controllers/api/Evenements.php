@@ -35,22 +35,25 @@ class Evenements extends REST_Controller
         $get_ville=$this->get('get_ville');
 
         // Vérifications pour le rayon
-        if (isset($rayon) && (!isset($adresse) || empty($adresse))){
+        /*if (isset($rayon) && (!isset($adresse) || empty($adresse))){
             // Création et envoi de la réponse
             $results = array(
                 'status' => false,
                 'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
             );
             $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }
+        }*/
+
+        if(isset($rayon) && $rayon == 0)
+            $rayon = null;
 
         if(isset($adresse) && !empty($adresse)){
             $coord = $this->geocoding->getCoordFromAddress($adresse.' Belgium');
             $lat = $coord['lat'];
             $lon = $coord['lon'];
         } else {
-            $lat = 0.0;
-            $lon = 0.0;
+            $lat = null;
+            $lon = null;
         }
 
         // Traitement de la requête

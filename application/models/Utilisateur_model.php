@@ -115,6 +115,24 @@ class Utilisateur_model extends CI_Model
         }
     }
 
+    public function verifie_login($login){
+        $this->db->from('utilisateurs');
+        $this->db->where('login', $login);
+        $this->db->where('est_actif', true);
+
+        return ($this->db->count_all_results() == 0);
+    }
+
+
+
+    public function verifie_email($email){
+        $this->db->from('utilisateurs');
+        $this->db->where('email', $email);
+        $this->db->where('est_actif', true);
+
+        return ($this->db->count_all_results() == 0);
+    }
+
     private function _update_ck($id_utilisateurs, $ck){
         $this->db->from('utilisateurs');
         $this->db->where('id_utilisateurs', $id_utilisateurs);

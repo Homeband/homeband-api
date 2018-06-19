@@ -60,13 +60,21 @@ class Album_model extends CI_Model
     }
 
     public function modifier($album, $id_albums, $id_groupes = 0){
-        $this->db->where('id_albums', $id_albums);
 
-        if(isset($id_groupes) && is_numeric($id_groupes) && $id_groupes > 0){
+        // Préparation de la requête
+        $this->db->where('id_albums', $id_albums);
+        if($id_groupes > 0){
             $this->db->where('id_groupes', $id_groupes);
         }
 
-        return $this->db->update('albums', $album);
+        foreach(get_object_vars($album) as $att => $val){
+            if($att != 'est_actif' && $att != 'id_albums' && $att != 'id_groupes'){
+                $this->db->set($att, $val);
+            }
+        }
+
+        // Modification de la fiche
+        return $this->db->update('albums');
     }
 
     public function supprimer($id_albums){

@@ -84,6 +84,7 @@ $route['api/groupes/(:num)/albums'] = 'api/groupes/albums/$1';
 $route['api/groupes/(:num)/albums/(:num)'] = 'api/groupes/album_detail/$1/$2';
 
 $route['api/groupes/(:num)/avis'] = 'api/groupes/avis/$1';
+$route['api/groupes/(:num)/avis/(:num)/status']['PUT'] = 'api/groupes/avis_status/$1/$2';
 $route['api/groupes/(:num)/avis/(:num)'] = 'api/groupes/avis_detail/$1/$2';
 
 $route['api/groupes/(:num)/annonces'] = 'api/groupes/annonces/$1';
@@ -105,9 +106,8 @@ $route['api/utilisateurs/(:num)/avis'] = 'api/utilisateurs/U_avis/$1';
 $route['api/utilisateurs/(:num)/avis/(:num)'] = 'api/utilisateurs/U_avis/$1/$2';
 
 
-
 // Albums
-$route['api/albums/(:num)/titres'] = 'api/albums/titre/$1';
+$route['api/albums/(:num)/titres'] = 'api/albums/titres/$1';
 
 
 // Styles
