@@ -506,7 +506,6 @@ class Groupes extends REST_Controller
         }
     }
 
-
     public function evenement_detail_put($id_groupe, $id_evenements){
 
         // Vérification de l'autorisation
@@ -541,6 +540,17 @@ class Groupes extends REST_Controller
     }
 
     public function evenement_detail_delete($id_groupe, $id_evenements){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $this->evenements->supprimer($id_evenements);
         $this->evenements->supprimer_detail($id_evenements);
         $results = array(
@@ -555,6 +565,18 @@ class Groupes extends REST_Controller
 
     // Albums
     public function albums_get($id_groupe){
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
@@ -568,9 +590,19 @@ class Groupes extends REST_Controller
         );
         $this->response($results, REST_Controller::HTTP_OK);
     }
-
-
+    
     public function albums_post($id_groupe){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
 
         $album = new Album($this->post('album'));
         $album->id_groupes = $id_groupe;
@@ -596,8 +628,19 @@ class Groupes extends REST_Controller
         }
     }
 
-    public function album_detail_get($id_groupe, $id_albums)
-    {
+    public function album_detail_get($id_groupe, $id_albums) {
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+
         $album = $this->albums->recuperer($id_albums, $id_groupe);
         $titre = $this->titre->lister($id_albums,$id_groupe);
 
@@ -623,6 +666,17 @@ class Groupes extends REST_Controller
     }
 
     public function album_detail_put($id_groupe, $id_albums){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $album_param = $this->put('album');
         $album = new Album($album_param);
 
@@ -647,6 +701,17 @@ class Groupes extends REST_Controller
     }
 
     public function album_detail_delete($id_groupe, $id_albums){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $this->albums->supprimer($id_albums);
         $results = array(
             'status' => true,
@@ -660,6 +725,18 @@ class Groupes extends REST_Controller
 
     // Avis
     public function avis_get($id_groupe){
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
@@ -680,6 +757,17 @@ class Groupes extends REST_Controller
     }
 
     public function avis_post($id_groupe){
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+
         $comment = new Avis($this->post('comment'));
         $comment->id_groupes = $id_groupe;
 
@@ -704,6 +792,18 @@ class Groupes extends REST_Controller
     }
 
     public function avis_detail_get($id_groupe, $id_avis){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $comment = $this->avis->recuperer($id_avis, $id_groupe);
 
         if (isset($comment)) {
@@ -726,6 +826,17 @@ class Groupes extends REST_Controller
     }
 
     public function avis_detail_put($id_groupe, $id_avis){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $comment = $this->put('comment');
         $comment = arrayToObject($comment);
         if ($this->avis->modifier($comment, $id_avis, $id_groupe)){
@@ -748,6 +859,17 @@ class Groupes extends REST_Controller
     }
 
     public function avis_status_put($id_groupe, $id_avis){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $status = $this->put('status');
         if(isset($status)){
             $avis = $this->avis->recuperer($id_avis, $id_groupe);
@@ -797,6 +919,17 @@ class Groupes extends REST_Controller
     }
 
     public function avis_detail_delete($id_groupe, $id_avis){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $this->avis->supprimer($id_avis);
         $results = array(
             'status' => true,
@@ -806,140 +939,49 @@ class Groupes extends REST_Controller
     }
 
 
-
-
-    // Annonces
-    public function annonces_get($id_groupe){
-        $date_debut = $this->get('date_debut');
-        $date_fin = $this->get('date_fin');
-        $qte = $this->get('qte');
-
-        $annonces = $this->annonces->lister($id_groupe, $date_debut, $date_fin, $qte);
-
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-            'annonces' => $annonces
-        );
-        $this->response($results, REST_Controller::HTTP_OK);
-    }
-
-    public function annonces_post($id_groupe){
-        $annonce = new Annonce($this->post('annonce'));
-        $annonce->id_groupes = $id_groupe;
-
-        $id = $this->annonces->ajouter($annonce,$id_groupe);
-
-        if($id > 0){
-            $annonce = $this->annonces->recuperer($id);
-            $results = array(
-                'status' => true,
-                'message' => 'Opération réussie !',
-                'annonce' => $annonce
-            );
-            $this->response($results, REST_Controller::HTTP_OK);
-        }else{
-            $results = array(
-                'status' => false,
-                'message' => 'Une erreur est survenue lors de la création de l\'annonce.',
-                'annonce' => null
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }
-    }
-
-    public function annonce_detail_get($id_groupe, $id_annonces){
-        $annonce = $this->annonces->recuperer($id_annonces, $id_groupe);
-
-        if (isset($annonce)) {
-            $results = array(
-                'status' => true,
-                'message' => 'Opération réussie !',
-                'annonce' => $annonce
-            );
-
-            $this->response($results, REST_Controller::HTTP_OK);
-        } else {
-            $results = array(
-                'status' => true,
-                'message' => 'Aucun avis correspondant à l\'ID '.$id_annonces.' pour ce groupe.',
-                'annonce' => null
-            );
-
-            $this->response($results, REST_Controller::HTTP_OK);
-        }
-    }
-
-    public function annonce_detail_put($id_groupe, $id_annonces){
-        $annonce = $this->put('annonce');
-        $annonce = arrayToObject($annonce);
-        if ($this->annonces->modifier($annonce,$id_annonces, $id_groupe)){
-            $annonce = $this->annonces->recuperer($id_annonces,$id_groupe);
-            $results = array(
-                'status' => true,
-                'message' => 'Operation reussie !',
-                'annonce' => $annonce
-            );
-            $this->response($results, REST_Controller::HTTP_OK);
-        }
-        else{
-            $results = array(
-                'status' => false,
-                'message' => 'Une erreur est survenue lors de la modification des données. Veuillez vérifier les données envoyées !',
-                'annonce' => null
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }
-    }
-
-    public function annonce_detail_delete($id_groupe, $id_annonces){
-        $this->annonces->supprimer($id_annonces);
-        $results = array(
-            'status' => true,
-            'message' => 'Operation reussie !',
-        );
-        $this->response($results, REST_Controller::HTTP_OK);
-    }
-
-
-
-
     // Login
     public function login_post(){
-        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, false)) {
-            $login = $this->post('login');
-            $pass = $this->post('mot_de_passe');
 
-            if (isset($login) && isset($pass)) {
-                $groupe = new Groupe();
-                $groupe->login = $login;
-                $groupe->mot_de_passe = $pass;
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array()
+        );
 
-                $connect = $this->groupes->connecter($groupe);
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID, false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
-                if (isset($connect)) {
+        $login = $this->post('login');
+        $pass = $this->post('mot_de_passe');
 
-                    $results = array(
-                        'status' => true,
-                        'message' => 'Connexion réussie !',
-                        'group' => $connect
-                    );
+        if (isset($login) && isset($pass)) {
+            $groupe = new Groupe();
+            $groupe->login = $login;
+            $groupe->mot_de_passe = $pass;
 
-                    $this->response($results, REST_Controller::HTTP_OK);
-                } else {
-                    $results = array(
-                        'status' => false,
-                        'message' => 'Identifiant ou mot de passe incorrect',
-                        'group' => null
-                    );
+            $connect = $this->groupes->connecter($groupe);
 
-                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
-                }
+            if (isset($connect)) {
+
+                $results = array(
+                    'status' => true,
+                    'message' => 'Connexion réussie !',
+                    'group' => $connect
+                );
+
+                $this->response($results, REST_Controller::HTTP_OK);
             } else {
-                $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+                $results = array(
+                    'status' => false,
+                    'message' => 'Identifiant ou mot de passe incorrect',
+                    'group' => null
+                );
+
+                $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
             }
         } else {
-            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 

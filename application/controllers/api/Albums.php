@@ -20,8 +20,18 @@ class Albums extends REST_Controller
     //album
     public function titres_post($id_albums){
 
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $titre = new Titre($this->post('titre'));
-        $album = $this->albums->recuperer($id_albums);
+
         if($album != null){
             $titre->id_albums = $album->id_albums;
             $titre->id_groupes = $album->id_groupes;

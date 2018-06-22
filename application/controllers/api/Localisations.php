@@ -18,6 +18,17 @@ class Localisations extends REST_Controller
     }
 
     public function index_get(){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         // Récupération du type d'information à renvoyer
         $type = $this->get("type");
 

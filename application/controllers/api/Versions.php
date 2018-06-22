@@ -15,6 +15,17 @@ class Versions extends REST_Controller
     }
 
     public function index_get(){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $num_table = $this->get('numtable');
         $nom_table = strtoupper($this->get('nomtable'));
 
@@ -62,6 +73,17 @@ class Versions extends REST_Controller
     }
 
     public function updates_post(){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $versions = $this->post('versions');
         $versions_retour = array();
         if(isset($versions) && is_array($versions) && !empty($versions)){

@@ -19,6 +19,17 @@ class Styles extends REST_Controller
      */
     public function index_get(){
 
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         // Récupération des paramètres
         $qte = $this->get('qte');
 
