@@ -87,8 +87,8 @@ class Homeband_api
         // Get headers
         $headers = apache_request_headers();
         $ak = (isset($headers['X-Homeband-AK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-AK'] : '';
-        $ck = (isset($headers['X-Homeband-CK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-CK'] : '';
-        $ts = (isset($headers['X-Homeband-TS']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-TS'] : 0;
+        $ck = (isset($headers['X-Homeband-CK']) && !empty($headers['X-Homeband-CK'])) ? $headers['X-Homeband-CK'] : '';
+        $ts = (isset($headers['X-Homeband-TS']) && !empty($headers['X-Homeband-TS'])) ? $headers['X-Homeband-TS'] : 0;
         $sign = (isset($headers['X-Homeband-SIGN']) && !empty($headers['X-Homeband-SIGN'])) ? $headers['X-Homeband-SIGN'] : '';
 
         $ck_checked = false;
