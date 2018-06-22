@@ -23,6 +23,17 @@ class Evenements extends REST_Controller
     }
 
     public function index_get(){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $id_groupes = $this->get('groupe');
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
@@ -70,8 +81,21 @@ class Evenements extends REST_Controller
     public function detail_get($id_evenement){
 
 
+
         // Traitement de la requête
         $event = $this->evenements->recuperer($id_evenement);
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($event->id_groupes)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $results = array(
             'status' => true,
             'message' => 'Operation reussie !',

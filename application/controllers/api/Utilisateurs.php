@@ -46,7 +46,16 @@ class Utilisateurs extends REST_Controller
      * Inscription d'un utilisateur
      */
     public function index_post(){
-        // TODO : Signature API
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID,false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
         // Création d'un objet utilisateur avec les données envoyées
         $user = new Utilisateur($this->post('user'));
@@ -108,7 +117,17 @@ class Utilisateurs extends REST_Controller
      * @param $id_utilisateurs Identifiant de l'utilisateur
      */
     public function detail_get($id_utilisateurs){
-        // TODO : Signature API
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $user = $this->utilisateurs->recuperer($id_utilisateurs);
 
         if (isset($user)) {
@@ -135,7 +154,16 @@ class Utilisateurs extends REST_Controller
      * @param $id_utilisateurs Identifiant de l'utilisateur
      */
     public function detail_put($id_utilisateurs){
-        // TODO : Signature API
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
         // TODO : Commentaires
         // TODO : Nomenclature
         $initialUser = $this->utilisateurs->recuperer($id_utilisateurs);
@@ -175,8 +203,16 @@ class Utilisateurs extends REST_Controller
      * Demande d'un nouveau mot de passe
      */
     public function forget_password_post(){
-        // TODO : Signature API
 
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID,false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
         // Paramètres d'appel
         $email = $this->input->post('email');
 
@@ -240,6 +276,16 @@ class Utilisateurs extends REST_Controller
     //Utilisateur/groupes
 
     public function U_groupes_get($id_utilisateurs){
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $cp = $this->get('code_postal');
         $rayon = $this->get('rayon');
         $qte = $this->get('quantite');
@@ -255,6 +301,17 @@ class Utilisateurs extends REST_Controller
     }
 
     public function U_groupes_post($id_utilisateurs){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $id_groupes = $this->post('group_id');
        if ($this->utilisateur_groupe->ajouter($id_utilisateurs,$id_groupes))
        {
@@ -279,6 +336,17 @@ class Utilisateurs extends REST_Controller
     }
 
     public function U_groupes_delete($id_utilisateurs,$id_groupes){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $this->utilisateur_groupe->supprimer($id_utilisateurs,$id_groupes);
 
         $results = array(
@@ -293,6 +361,17 @@ class Utilisateurs extends REST_Controller
     //Utilisateur/avis
 
     public function U_avis_get($id_utilisateurs){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $date_debut = $this->get('date_debut');
         $date_fin = $this->get('date_fin');
         $qte = $this->get('qte');
@@ -308,6 +387,17 @@ class Utilisateurs extends REST_Controller
 }
 
     public function U_avis_post($id_utilisateurs){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $id_groupes = $this->post('group_id');
         if ($this->utilisateur_groupe->ajouter($id_utilisateurs,$id_groupes))
         {
@@ -333,6 +423,17 @@ class Utilisateurs extends REST_Controller
     }
 
     public function U_avis_delete($id_utilisateurs,$id_groupes){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateurs),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $this->utilisateur_groupe->supprimer($id_utilisateurs,$id_groupes);
 
         $results = array(
@@ -346,6 +447,16 @@ class Utilisateurs extends REST_Controller
 
     //Ajout de la liaison addFavourite groupe 
     public function declare_connexion_groupe_post($id_utilisateur,$id_groupe){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateur),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
         $get_groupe = $this->post("get_groupe");
         $get_membres = $this->post("get_membres");
@@ -388,6 +499,16 @@ class Utilisateurs extends REST_Controller
 
     //Supprimer la liaison entre le groupe et l'utilisateur
     public function remove_connexion_groupe_delete($id_utilisateur,$id_groupe){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array($id_utilisateur),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
         if( $this->utilisateur_groupe->recuperer($id_utilisateur,$id_groupe) != null){
             $this->utilisateur_groupe->supprimer($id_utilisateur,$id_groupe);
