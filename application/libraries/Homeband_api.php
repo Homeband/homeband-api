@@ -93,6 +93,7 @@ class Homeband_api
 
         $ck_checked = false;
 
+
         // Check TS
         $now = time();
         if($now >= $ts && ($now - $ts) <= 300){
@@ -104,6 +105,7 @@ class Homeband_api
 
                     // Check CK
                     if(count($authorizedTypes) == 0){
+
                         // Pas de types autorisés (= Tous)
                         if($identifiedUser){
                             // Un utilisateur doit être identifié
@@ -115,19 +117,20 @@ class Homeband_api
                             $ck_checked = true;
                         }
                     } else {
+
                         // On vérifie que le type d'utilisateur est dans le tableau des types autorisés
                         $type = $this->getType();
                         if(in_array($type, $authorizedTypes)){
                             if($identifiedUser){
                                 // Un utilisateur doit être identifié
-                                $pos = array_search($type, $authorizedTypes);
-                                if(isset($authorizedID[$pos]) && is_array($authorizedID[$pos])){
+                                if(isset($authorizedID[$type]) && is_array($authorizedID[$type])){
                                     $id = $this->getID($type);
                                     if($id > 0){
-                                        if(count($authorizedID[$pos]) == 0) {
+
+                                        if(count($authorizedID[$type]) == 0) {
                                             $ck_checked = true;
                                         } else {
-                                            $ck_checked = in_array($id, $authorizedID[$pos]);
+                                            $ck_checked = in_array($id, $authorizedID[$type]);
                                         }
                                     }
                                 }
@@ -140,7 +143,6 @@ class Homeband_api
 
                     if($ck_checked){
                         $signature = "$1$" . hash("sha256", $as . '+' . $ck . '+' . $ts);
-
                         return ($signature == $sign);
                     }
                 }
@@ -149,7 +151,6 @@ class Homeband_api
 
         return false;
     }
-
 
     public function getType(){
         $headers = apache_request_headers();
@@ -183,7 +184,7 @@ class Homeband_api
             case self::$TYPE_USER: // Utilisateur
                 $ci->load->model("utilisateur_model", "utilisateurs");
                 $user = $ci->utilisateurs->getByCk($ck);
-
+                //var_dump($user);
                 if($user != null){
                     $id = $user->id_utilisateurs;
                 }
