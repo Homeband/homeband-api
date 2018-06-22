@@ -18,6 +18,10 @@ class Sessions extends REST_Controller
 
     public function index_post(){
 
+        if(!$this->homeband_api->isAuthorized(array(), array(), false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $login = $this->post("login");
         $password = $this->post('mot_de_passe');
         $type = (int)$this->post('type');
@@ -34,83 +38,63 @@ class Sessions extends REST_Controller
             case 2:
                 $this->_connexion_groupe($login, $password);
                 break;
-            case 3:
-                break;
             default:
                 $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
     private function _connexion_utilisateur($login, $password){
-        //if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, false)) {
-            if (isset($login) && isset($password)) {
+        if (isset($login) && isset($password)) {
 
-                $utilisateur = $this->utilisateurs->connecter($login, $password);
-                /*$array = array(
-                    'message' => "OK",
+            $utilisateur = $this->utilisateurs->connecter($login, $password);
+            if (isset($utilisateur)) {
+
+                $results = array(
+                    'status' => true,
+                    'message' => 'Connexion réussie !',
+                    'user' => $utilisateur
+                );
+
+                $this->response($results, REST_Controller::HTTP_OK);
+            } else {
+                $results = array(
                     'status' => false,
-                    'data' => "test_".$login
-                );*/
-                //return $array;
-                if (isset($utilisateur)) {
+                    'message' => 'Identifiant ou mot de passe incorrect',
+                    'user' => NULL
+                );
 
-                    $results = array(
-                        'status' => true,
-                        'message' => 'Connexion réussie !',
-                        'user' => $utilisateur
-                    );
-
-                    $this->response($results, REST_Controller::HTTP_OK);
-                } else {
-                    $results = array(
-                        'status' => false,
-                        'message' => 'Identifiant ou mot de passe incorrect',
-                        'user' => NULL
-                    );
-
-                    $this->response($results, REST_Controller::HTTP_OK);
-                }
-            } else {
-                $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
-            }
-        //} else {
-          //  $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
-        //}
-    }
-
-    private function _connexion_groupe($login, $password){
-        if($this->homeband_api->check(Homeband_api::$CK_TYPE_GROUPE, $id, false)) {
-            if (isset($login) && isset($password)) {
-
-                $groupe = $this->groupes->connecter($login, $password);
-
-                if (isset($groupe)) {
-
-                    $results = array(
-                        'status' => true,
-                        'message' => 'Connexion réussie !',
-                        'group' => $groupe
-                    );
-
-                    $this->response($results, REST_Controller::HTTP_OK);
-                } else {
-                    $results = array(
-                        'status' => false,
-                        'message' => 'Identifiant ou mot de passe incorrect',
-                        'group' => NULL
-                    );
-
-                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
-                }
-            } else {
-                $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+                $this->response($results, REST_Controller::HTTP_OK);
             }
         } else {
-            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
-    private function _connexion_administrateur($login, $password){
+    private function _connexion_groupe($login, $password){
+        if (isset($login) && isset($password)) {
 
+            $groupe = $this->groupes->connecter($login, $password);
+
+            if (isset($groupe)) {
+
+                $results = array(
+                    'status' => true,
+                    'message' => 'Connexion réussie !',
+                    'group' => $groupe
+                );
+
+                $this->response($results, REST_Controller::HTTP_OK);
+            } else {
+                $results = array(
+                    'status' => false,
+                    'message' => 'Identifiant ou mot de passe incorrect',
+                    'group' => NULL
+                );
+
+                $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        } else {
+            $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+        }
     }
 }

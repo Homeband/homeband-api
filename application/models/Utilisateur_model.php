@@ -143,11 +143,21 @@ class Utilisateur_model extends CI_Model
         return $query->row(0, 'Utilisateur');
     }
 
+    public function getByCK($ck){
+        $this->db->from("utilisateurs");
+        $this->db->where("est_actif", true);
+        $this->db->where("api_ck", $ck);
+
+        return $this->db->get()->row(0, "Utilisateur");
+    }
+
     private function _update_ck($id_utilisateurs, $ck){
         $this->db->from('utilisateurs');
         $this->db->where('id_utilisateurs', $id_utilisateurs);
         $this->db->set('api_ck', $ck);
         $this->db->update();
     }
+
+
 
 }

@@ -74,7 +74,7 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-    'dsn'	=> 'mysql:host=localhost;dbname=homeband',
+    'dsn'	=> 'mysql:host=dev.zen-project.be;dbname=homeband',
     'hostname' => 'mysql:host=localhost',
     'username' => 'homeband',
     'password' => 'HomeB@nd2017$',

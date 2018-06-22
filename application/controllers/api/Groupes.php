@@ -26,32 +26,26 @@ class Groupes extends REST_Controller
      * Liste des groupes
      */
     public function index_get(){
-        // Si on passe dans un tableau associatif :
-        /*  $params = array(
-                    'cp' => $this->input->get('nomduchamp'),
-                    'rayon' => $this->input->get('nomduchamp')
-                    'styles' => $this->input->get('nomduchamp')
-                );
-       */
+
+        $authorizedTypes = array(Homeband_api::$TYPE_USER);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array()
+        );
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
         // Récupération des paramètres
         $adresse = $this->get('adresse');
         $rayon = $this->get('rayon');
         $styles = $this->get('styles');
 
-        // Vérifications pour le rayon
-        /*if (isset($rayon) && (!isset($adresse) || empty($adresse))){
-            // Création et envoi de la réponse
-            $results = array(
-                'status' => false,
-                'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }*/
-
-        if(isset($rayon) && $rayon == 0)
+        // Vérification du rayon
+        if(isset($rayon) && $rayon == 0){
             $rayon = null;
+        }
 
+        // Vérification de l'adresse
         if(isset($adresse) && !empty($adresse)){
             $coord = $this->geocoding->getCoordFromAddress($adresse.' Belgium');
             $lat = $coord['lat'];
@@ -80,47 +74,46 @@ class Groupes extends REST_Controller
      */
     public function index_post()
     {
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array();
 
-        if ($this->homeband_api->check(0, $id, false)) {
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID, false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
 
-            // Récupération du paramètre nommé 'group' depuis le client ( ex : inscription dans le controleur groupes sur homeband , ligne avec $result = $this->rest->post('groupes', array("group" => $group)); )
-            // Traduction de cette ligne : variable $result = rest c'est l'appelle à l'API avec la méthode post , ( 1er paramètres c'est le nom du controlleur à appeller sur API comme par ex : 'groupes/test'
-            // ## Exemple de tableau associatif dans homeband/groupes/connexion
-            // Et le dernier paramètres est un tableau associatif " => " , "group" c'sst le nom du parametre de l'API on pourrait l'appeller test ,
-            $group_post = $this->post('group');
-            $group = new Groupe($group_post);
-            $group->hash_password();
-            $group->id_groupes = 0;
-            $group->api_ck = "";
+        // Récupération des paramètres
+        $group_post = $this->post('group');
+        $group = new Groupe($group_post);
+        $group->hash_password();
+        $group->id_groupes = 0;
+        $group->api_ck = "";
 
-            // TODO : Vérifier les champs obligatoires
+        // TODO : Vérifier les champs obligatoires
 
-            if ($this->groupes->verifie_login($group->login)) {
-                if ($this->groupes->inscrire($group)) {
-                    $results = array(
-                        'status' => true,
-                        'message' => 'Inscription réussie !'
-                    );
+        if ($this->groupes->verifie_login($group->login)) {
+            if ($this->groupes->inscrire($group)) {
+                $results = array(
+                    'status' => true,
+                    'message' => 'Inscription réussie !'
+                );
 
-                    $this->response($results, REST_Controller::HTTP_CREATED);
-                } else {
-                    $results = array(
-                        'status' => false,
-                        'message' => 'Erreur lors de l\'inscription'
-                    );
-
-                    $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
-                }
+                $this->response($results, REST_Controller::HTTP_OK);
             } else {
                 $results = array(
                     'status' => false,
-                    'message' => 'Le login n\'est pas disponible.'
+                    'message' => 'Erreur lors de l\'inscription'
                 );
 
                 $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
             }
         } else {
-            $this->response(NULL, REST_Controller::HTTP_UNAUTHORIZED);
+            $results = array(
+                'status' => false,
+                'message' => 'Le login n\'est pas disponible.'
+            );
+
+            $this->response($results, REST_Controller::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
@@ -130,6 +123,17 @@ class Groupes extends REST_Controller
      */
     public function detail_get($id_groupe){
 
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array($id_groupe)
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
         $getMembers = $this->get('membres');
 
         if(!isset($getMembers) || intval($getMembers) != 1){
@@ -138,7 +142,12 @@ class Groupes extends REST_Controller
             $getMembers = true;
         }
 
+        $typeRequest = $this->homeband_api->getType();
         $groupe = $this->groupes->recuperer($id_groupe);
+        unset($groupe->mot_de_passe);
+        if($typeRequest != Homeband_api::$TYPE_GROUP){
+            unset($groupe->api_ck);
+        }
 
         if(isset($groupe)){
 

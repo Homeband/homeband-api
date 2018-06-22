@@ -189,4 +189,12 @@ class Groupe_model extends CI_Model
         return $row;
     }
 
+    public function getByCK($ck){
+        $this->db->from("groupes");
+        $this->db->where("est_actif", true);
+        $this->db->where("api_ck", $ck);
+
+        return $this->db->get()->row(0, "Groupe");
+    }
+
 }
