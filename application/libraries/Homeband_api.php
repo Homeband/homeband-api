@@ -97,7 +97,6 @@ class Homeband_api
         // Check TS
         $now = time();
         if($now >= $ts && ($now - $ts) <= 300){
-
             // Check AK - AS
             if(!empty($ak)) {
                 $as = $this->_get_as($ak);
@@ -105,7 +104,6 @@ class Homeband_api
 
                     // Check CK
                     if(count($authorizedTypes) == 0){
-
                         // Pas de types autorisés (= Tous)
                         if($identifiedUser){
                             // Un utilisateur doit être identifié
@@ -117,14 +115,15 @@ class Homeband_api
                             $ck_checked = true;
                         }
                     } else {
-
                         // On vérifie que le type d'utilisateur est dans le tableau des types autorisés
                         $type = $this->getType();
+
                         if(in_array($type, $authorizedTypes)){
                             if($identifiedUser){
                                 // Un utilisateur doit être identifié
                                 if(isset($authorizedID[$type]) && is_array($authorizedID[$type])){
                                     $id = $this->getID($type);
+
                                     if($id > 0){
 
                                         if(count($authorizedID[$type]) == 0) {
@@ -142,7 +141,10 @@ class Homeband_api
                     }
 
                     if($ck_checked){
+
+                        //var_dump("OK - CK");
                         $signature = "$1$" . hash("sha256", $as . '+' . $ck . '+' . $ts);
+                        //var_dump($signature);
                         return ($signature == $sign);
                     }
                 }
@@ -171,7 +173,7 @@ class Homeband_api
     public function getID($type){
         // Récupération de la clé client
         $headers = apache_request_headers();
-        $ck = (isset($headers['X-Homeband-CK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-CK'] : '';
+        $ck = (isset($headers['X-Homeband-CK']) && !empty($headers['X-Homeband-CK'])) ? $headers['X-Homeband-CK'] : '';
 
         // ID à retourner
         $id = 0;
@@ -182,6 +184,7 @@ class Homeband_api
         // Selon le type d'utilisateur
         switch($type){
             case self::$TYPE_USER: // Utilisateur
+                //var_dump()
                 $ci->load->model("utilisateur_model", "utilisateurs");
                 $user = $ci->utilisateurs->getByCk($ck);
                 //var_dump($user);
