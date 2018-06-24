@@ -197,4 +197,14 @@ class Groupe_model extends CI_Model
         return $this->db->get()->row(0, "Groupe");
     }
 
+    public function recuperer_par_email($email){
+        $this->db->from('groupes');
+        $this->db->where('email', $email);
+        $this->db->where('est_actif', true);
+
+        $query = $this->db->get();
+
+        return $query->row(0, 'Groupe');
+    }
+
 }
