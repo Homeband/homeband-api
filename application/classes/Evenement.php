@@ -11,4 +11,5 @@ class Evenement extends MY_Object
     public $est_actif = true;
     public $id_groupes = 0;
     public $id_adresses = 0;
+    public $lien_facebook = '';
 }

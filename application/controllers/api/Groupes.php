@@ -529,13 +529,24 @@ class Groupes extends REST_Controller
 
         $event = $this->put('event');
         $event = arrayToObject($event);
-        if ($this->evenements->modifier($event)){
+        if ($this->evenements->modifier($event, $id_evenements, $id_groupe)){
             $event = $this->evenements->recuperer($id_evenements,$id_groupe);
+
             $results = array(
                 'status' => true,
                 'message' => 'Operation reussie !',
-                'event' => $event
+                'event' => $event,
             );
+
+            $address = $this->post("address");
+            if(isset($address)){
+                $obj = new Adresse($address);
+                if($this->adresses->modifier($obj)){
+                    $obj = $this->adresses->recuperer($obj->id_adresses);
+                    $results["address"] = $obj;
+                }
+            }
+
             $this->response($results, REST_Controller::HTTP_OK);
         }
         else{

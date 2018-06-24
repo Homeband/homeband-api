@@ -121,6 +121,10 @@ $route['api/evenements'] = 'api/evenements';
 $route['api/evenements/(:num)'] = 'api/evenements/detail/$1';
 
 
+// Evènements
+$route['api/adresses/(:num)'] = 'api/adresses/detail/$1';
+
+
 // Versions
 $route['api/versions'] = 'api/versions';
 $route['api/versions/updates'] = 'api/versions/updates';
