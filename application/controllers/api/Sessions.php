@@ -13,7 +13,6 @@ class Sessions extends REST_Controller
         parent::__construct($config);
         $this->load->model('groupe_model', 'groupes');
         $this->load->model('utilisateur_model', 'utilisateurs');
-        //$this->load->model('administrateur_model', 'groupes');
     }
 
     public function index_post(){
