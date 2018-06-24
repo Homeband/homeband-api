@@ -45,16 +45,6 @@ class Evenements extends REST_Controller
         $styles = $this->get('styles');
         $get_ville=$this->get('get_ville');
 
-        // Vérifications pour le rayon
-        /*if (isset($rayon) && (!isset($adresse) || empty($adresse))){
-            // Création et envoi de la réponse
-            $results = array(
-                'status' => false,
-                'message' => 'L\'adresse est requise pour filtrer sur le rayon !',
-            );
-            $this->response($results, REST_Controller::HTTP_BAD_REQUEST);
-        }*/
-
         if(isset($rayon) && $rayon == 0)
             $rayon = null;
 

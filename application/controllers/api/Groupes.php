@@ -11,6 +11,7 @@ class Groupes extends REST_Controller
     public function __construct($config = 'rest')
     {
         parent::__construct($config);
+        $this->load->model('adresse_model', 'adresses');
         $this->load->model('groupe_model', 'groupes');
         $this->load->model('membre_model', 'membres');
         $this->load->model('evenement_model', 'evenements');
@@ -442,8 +443,15 @@ class Groupes extends REST_Controller
             $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
         }
 
+        // Adresse
+        $address = new Adresse($this->post('address'));
+        $address->id_adresses = 0;
+
+
+        // Evenements
         $event = new Evenement($this->post('event'));
         $event->id_groupes = $id_groupe;
+        $event->id_adresses = $this->adresses->ajouter($address);
 
         $id = $this->evenements->ajouter($event);
 

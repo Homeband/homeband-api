@@ -1,6 +1,6 @@
 <?php
 
-class Adresse
+class Adresse extends MY_Object
 {
     public $boite = '';
     public $est_actif = true;
