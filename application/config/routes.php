@@ -71,6 +71,8 @@ $route['api/sessions']['POST'] = 'api/sessions';
 
 
 // Groupes
+$route['api/groupes/forget'] = 'api/groupes/forget_password';
+
 $route['api/groupes'] = 'api/groupes';
 $route['api/groupes/(:num)'] = 'api/groupes/detail/$1';
 
