@@ -36,4 +36,37 @@ class Villes extends REST_Controller
 
         $this->response($results, REST_Controller::HTTP_OK);
     }
+
+    public function detail_get($id){
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_USER, Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_USER => array(),
+            Homeband_api::$TYPE_GROUP => array()
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+
+        $ville = $this->villes->recuperer($id);
+
+        if($ville != null){
+            $result = array(
+                "status" => true,
+                "message" => "Opération réussie !",
+                "ville" => $ville
+            );
+
+            $this->response($result, REST_Controller::HTTP_OK);
+        } else {
+            $result = array(
+                "status" => false,
+                "message" => "Pas de ville trouvée avec cet ID.",
+                "ville" => null
+            );
+
+            $this->response($result, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
 }
