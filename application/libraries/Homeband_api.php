@@ -8,83 +8,12 @@
 
 class Homeband_api
 {
-    public static $CK_TYPE_GROUPE = 1;
-    public static $CK_TYPE_UTILISATEUR = 2;
-    public static $CK_TYPE_ADMINISTRATEUR = 3;
-    public static $CK_TYPE_ALL = 4;
-
     public static $TYPE_USER = 1;
     public static $TYPE_GROUP = 2;
 
     private $table = "applications_api";
 
-    /**
-     * Vérifie la signature de la requête
-     */
-    public function check($ck_type = 1, $id = NULL, $ck_force = true){
-
-        $ts_checked = false;
-        $as_checked = false;
-        $consumer_checked = false;
-
-        // Get headers
-        $headers = apache_request_headers();
-        $ak = (isset($headers['X-Homeband-AK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-AK'] : '';
-        $ck = (isset($headers['X-Homeband-CK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-CK'] : '';
-        $ts = (isset($headers['X-Homeband-TS']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-TS'] : 0;
-        $sign = (isset($headers['X-Homeband-SIGN']) && !empty($headers['X-Homeband-SIGN'])) ? $headers['X-Homeband-SIGN'] : '';
-
-
-        // Check AK - AS
-        if(!empty($ak)) {
-            $as = $this->_get_as($ak);
-            if (isset($as) && !empty($as)) {
-                $as_checked = true;
-            }
-        }
-
-        // Check TS
-        $now = time();
-        if($now >= $ts && ($now - $ts) <= 300){
-            $ts_checked = true;
-        }
-
-        $typeCK = $this->getType();
-
-        // Check CK
-        if($ck_force){
-            if(!empty($ck)){
-                switch($typeCK){
-                    case 1 :
-                        $consumer_checked = $this->_check_ck_utilisateurs($ck, $id);
-                        break;
-
-                    case 2 :
-                        $consumer_checked = $this->_check_ck_groupes($ck, $id);
-                        break;
-
-                    default :
-                        $consumer_checked = ($this->_check_ck_groupes($ck, $id) || $this->_check_ck_utilisateurs($ck, $id));
-                        break;
-                }
-            }
-        } else {
-            $consumer_checked = true;
-        }
-
-        // Check signature
-        if($ts_checked && $consumer_checked && $as_checked){
-            $signature = "$1$" . hash("sha256", $as . '+' . $ck . '+' . $ts);
-
-            return ($signature == $sign);
-        } else {
-            return false;
-        }
-    }
-
-
     public function isAuthorized($authorizedTypes = array(), $authorizedID = array(), $identifiedUser = true){
-        return true;
         // Get headers
         $headers = apache_request_headers();
         $ak = (isset($headers['X-Homeband-AK']) && !empty($headers['X-Homeband-AK'])) ? $headers['X-Homeband-AK'] : '';
