@@ -12,6 +12,7 @@ class Utilisateurs extends REST_Controller
     {
         parent::__construct($config);
         $this->load->model('utilisateur_model', 'utilisateur');
+        $this->load->model('utilisateur_groupe_model', 'utilisateur_groupe');
         $this->load->model('groupe_model', 'groupes');
         $this->load->model('membre_model', 'membres');
         $this->load->model('album_model', 'albums');
