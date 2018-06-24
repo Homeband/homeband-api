@@ -20,6 +20,7 @@ class Groupes extends REST_Controller
         $this->load->model('titre_model', 'titre');
         $this->load->model('annonce_model', 'annonces');
         $this->load->model('utilisateur_model', 'utilisateurs');
+        $this->load->library("Homeband_api");
         $this->load->library("Geocoding");
     }
 
@@ -990,6 +991,80 @@ class Groupes extends REST_Controller
             }
         } else {
             $this->response(NULL, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Demande d'un nouveau mot de passe
+     */
+    public function forget_password_post(){
+
+        // Vérification de l'autorisation
+        $authorizedTypes = array(Homeband_api::$TYPE_GROUP);
+        $authorizedID = array(
+            Homeband_api::$TYPE_GROUP => array(),
+        );
+
+        if(!$this->homeband_api->isAuthorized($authorizedTypes, $authorizedID,false)){
+            $this->response(null, REST_Controller::HTTP_UNAUTHORIZED);
+        }
+        // Paramètres d'appel
+        $email = $this->input->post('email');
+
+        if(isset($email)){
+            // transformation de l'email en minuscules
+            $email = strtolower($email);
+
+            // Recherche d'un utilisateur correspondant
+            $group = $this->groupes->recuperer_par_email($email);
+            if($group != null){
+
+                // Génération d'un nouveau mot de passe
+                $password = random_string('alnum', 12);
+                $group->mot_de_passe = $password;
+                $group->hash_password();
+
+                // Création de l'email pour informer l'utilisateur
+                $this->load->library('email');
+
+                $this->email->from('no-reply@homeband-heh.be', 'Homeband');
+                $this->email->to($email);
+                $this->email->subject("Demande d'un nouveau de mot de passe");
+                $this->email->message("Votre nouveau mot de passe est: $password");
+
+                if($this->email->send()){
+                    // Si l'envoi d'email réussi, on met à jour le mot de passe dans la base de données
+                    $this->groupes->modifier($group, $group->id_groupes);
+
+                    // Retour
+                    $result = array(
+                        "status" => true,
+                        "message" => "Opération réussie !"
+                    );
+                } else {
+                    // Retour
+                    $result = array(
+                        "status" => false,
+                        "message" => "Une erreur interne s'est produite, veuillez réessayer plus tard."
+                    );
+                }
+
+                $this->response($result, REST_Controller::HTTP_OK);
+            } else {
+                $result = array(
+                    "status" => false,
+                    "message" => "Aucun utilisateur ne correspond à l'adresse email renseignée."
+                );
+
+                $this->response($result, REST_Controller::HTTP_BAD_REQUEST);
+            }
+        } else {
+            $result = array(
+                "status" => false,
+                "message" => "L'adresse email de l'utilisateur est obligatoire."
+            );
+
+            $this->response($result, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
